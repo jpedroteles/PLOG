@@ -286,11 +286,12 @@ logo:- nl,
 
 
 
-mainMenu(1):- write('Play'), nl.
+mainMenu(1):- playMenu.
 mainMenu(2):- write('Instructions'), nl.
 mainMenu(3):- write('Exit'),nl.
 
 mainMenu:- logo,
+	write('Main Menu'), nl,
 	write('(1) - Play'), nl,
 	write('(2) - Instructions'), nl,
 	write('(3) - Exit'), nl, nl,
@@ -299,4 +300,18 @@ mainMenu:- logo,
 	member(Input, [1,2,3]) ->mainMenu(Input);
 		mainMenu.
 
-main:- createBoard(6), printBoard.
+playMenu(1):- write('Player vs Player'), nl.
+playMenu(2):- write('Player vs Computer'), nl.
+playMenu(3):- write('Computer vs Computer'), nl.
+
+playMenu:-
+	write('Play'), nl,
+	write('(1) Player vs Player'), nl,
+	write('(2) Player vs Computer'), nl,
+	write('(3) Computer vs Computer'), nl,
+	write('(4) Back'), nl,
+	write('Input (end with .) :'), nl,
+	read(Input),
+	Input =:= 4 -> mainMenu;
+	member(Input, [1,2,3]) ->playMenu(Input);
+		playMenu.
