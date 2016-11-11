@@ -1,7 +1,8 @@
 /*LIBRARIES*/
-:-use_module(library(lists)).
+:-	use_module(library(lists)),
+	use_module(library(random)).
 
-:- dynamic
+:-	dynamic
       gameBoard/1.
 
 /*--------------------------------------------------PRINT BOARD START------------------------------------------------*/
@@ -256,5 +257,46 @@ getBoard(Board):-
 getBoardSize(Size):-
 		gameBoard([_, Size]).
 
+logo:- nl,
+	write('           ___'), nl,
+	write('           \\\\||'), nl,
+	write('          ,\'_,-\\'), nl, 
+	write('          ;\'____\\'), nl, 
+	write('          || =\\=|'), nl, 
+	write('          ||  - |'), nl,                           
+	write('     ,---\',_--\'\'-,,---------,--,----_,'), nl,         
+	write('    / `-._- _--/,,|  ___,,--\'--\'._<') , nl,   
+	write('   /-._,  `-.__;,,|'), nl,                           
+	write('  /   ;\\      / , ;'), nl,                         
+	write(' /  ,\' | _ - \',/, ;'), nl,
+	write('(  (   |     /, ,,;'), nl,
+	write(' \\  \\  |     \',,/,;'), nl,
+	write('  \\  \\ |    /, / ,;'), nl,
+	write(' (| ,^.|   / ,, ,/;'), nl,
+	write('  `-\',/ `-,_,, ,/,;'), nl,
+	write('       `-._ `-._,,;'), nl,
+	write('       |/,,`-._ `-.'), nl,
+	write('       |, ,;, ,`-._\\'), nl,
+	write('     ___ _ _'), nl,           
+ 	write('    |_ _| (_) ___  ___'), nl, 
+	write('     | || | |/ _ \\/ __|'), nl,
+  write('     | || | | (_) \\__ \\'), nl,
+	write('    |___|_|_|\\___/|___/'), nl, nl.
+
+
+
+
+mainMenu(1):- write('Play'), nl.
+mainMenu(2):- write('Instructions'), nl.
+mainMenu(3):- write('Exit'),nl.
+
+mainMenu:- logo,
+	write('(1) - Play'), nl,
+	write('(2) - Instructions'), nl,
+	write('(3) - Exit'), nl, nl,
+	write('Input (end with .) :'), nl,
+	read(Input),
+	member(Input, [1,2,3]) ->mainMenu(Input);
+		mainMenu.
 
 main:- createBoard(6), printBoard.
