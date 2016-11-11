@@ -285,6 +285,7 @@ logo:- nl,
 
 
 
+/*----------------------------------------------------MENUS--------------------------------------------------------*/
 
 mainMenu(1):- playMenu.
 mainMenu(2):- write('Instructions'), nl.
@@ -301,17 +302,31 @@ mainMenu:- logo,
 		mainMenu.
 
 playMenu(1):- write('Player vs Player'), nl.
-playMenu(2):- write('Player vs Computer'), nl.
-playMenu(3):- write('Computer vs Computer'), nl.
+playMenu(2):- write('Player vs Computer'), nl, selectDifficultyMenu.
+playMenu(3):- write('Computer vs Computer'), nl, selectDifficultyMenu.
+playMenu(4):- mainMenu.
 
-playMenu:-
+playMenu:- nl,
 	write('Play'), nl,
 	write('(1) Player vs Player'), nl,
 	write('(2) Player vs Computer'), nl,
 	write('(3) Computer vs Computer'), nl,
-	write('(4) Back'), nl,
+	write('(4) Back'), nl, nl,
 	write('Input (end with .) :'), nl,
 	read(Input),
-	Input =:= 4 -> mainMenu;
-	member(Input, [1,2,3]) ->playMenu(Input);
+	member(Input, [1,2,3,4]) -> playMenu(Input);
 		playMenu.
+
+selectDifficultyMenu(1):- write('Difficulty = Easy'), nl.
+selectDifficultyMenu(2):- write('Difficulty = Advanced'), nl.
+selectDifficultyMenu(3):- playMenu.
+
+selectDifficultyMenu:- nl,
+	write('Select Difficulty'), nl,
+	write('(1) - Easy'), nl,
+	write('(2) - Advanced'), nl,
+	write('(3) - Back'), nl, nl,
+	write('Input (end with .) :'), nl,
+	read(Input),
+	member(Input, [1,2,3]) ->selectDifficultyMenu(Input);
+		selectDifficultyMenu.
