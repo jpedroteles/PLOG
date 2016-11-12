@@ -1,7 +1,8 @@
 /*LIBRARIES*/
 :-	use_module(library(lists)),
 	use_module(library(random)).
-:- include('Objects.pl').
+:- include('Logic.pl').
+:- include('Elements.pl').
 
 /*--------------------------------------------------PRINT BOARD START------------------------------------------------*/
 /*PRINT ROWS*/
@@ -238,6 +239,12 @@ replace(X,Y, NewElement):-
  	replaceY(Board, Column, Line, NewElement, NewBoard),
  	setBoard(NewBoard).
 
+replaceElementInList([_|T], 0, Element, [Element|T]).
+replaceElementInList([H|T], I, Element, [H|R]):- 
+	I > 0, 
+	NI is I-1, 
+	replaceElementInList(T, NI, Element, R), !.
+replaceElementInList(L, _, _, L).
 
 /*----------------------------------------------------MENUS--------------------------------------------------------*/
 
@@ -267,9 +274,10 @@ logo:- nl,
   write('     | || | | (_) \\__ \\'), nl,
 	write('    |___|_|_|\\___/|___/'), nl, nl.
 
-/*----------------------------------------------------MENUS--------------------------------------------------------*/
 
-mainMenu(1):- playMenu.
+mainMenu(1):-  nl,
+	write('Play'), nl,
+	selectBoardSize.
 mainMenu(2):- instructionsMenu.
 mainMenu(3):- write('Exit'),nl.
 
@@ -313,15 +321,6 @@ instructionsMenu:- nl,
         Input =:= 1 ->mainMenu;
                 instructionsMenu.
 
-playMenu(1):- write('Player vs Player'), nl.
-playMenu(2):- write('Player vs Computer'), nl, selectDifficultyMenu.
-playMenu(3):- write('Computer vs Computer'), nl, selectDifficultyMenu.
-playMenu(4):- mainMenu.
-
-playMenu:- nl,
-	write('Play'), nl,
-	selectBoardSize.
-
 selectBoardSize(1):- createBoard(6), selectNumberOfPlayers.
 selectBoardSize(2):- createBoard(7), selectNumberOfPlayers.
 selectBoardSize(3):- createBoard(8), selectNumberOfPlayers.
@@ -362,9 +361,9 @@ nextPlayer(PlayerID):-
 	PlayerID1 is PlayerID + 1,
 	getNumberOfPlayers(NumberOfPlayers), 
 	PlayerID < NumberOfPlayers  -> selectDifficultyMenu(PlayerID1);
-		write('Game Start'), nl, nl.
+		startGame.
 selectPlayerDifficulty(PlayerID, 1):-
-	addPlayer(PlayerID, -1),
+	addPlayer(PlayerID, 0),
 	nextPlayer(PlayerID).
 selectPlayerDifficulty(PlayerID, 2):-
 	addPlayer(PlayerID, 1),
