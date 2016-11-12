@@ -267,7 +267,23 @@ logo:- nl,
   write('     | || | | (_) \\__ \\'), nl,
 	write('    |___|_|_|\\___/|___/'), nl, nl.
 
-instructions:- nl,
+/*----------------------------------------------------MENUS--------------------------------------------------------*/
+
+mainMenu(1):- playMenu.
+mainMenu(2):- instructionsMenu.
+mainMenu(3):- write('Exit'),nl.
+
+mainMenu:- logo,
+        write('Main Menu'), nl,
+        write('(1) - Play'), nl,
+        write('(2) - Instructions'), nl,
+        write('(3) - Exit'), nl, nl,
+        write('Input (end with .) :'), nl,
+        read(Input),
+        member(Input, [1,2,3]) ->mainMenu(Input);
+                mainMenu.
+
+instructionsMenu:- nl,
         write('Instructions:'),nl,
         write('**Rule 1 Deploy & Occupy**'),nl,
         write(' Place one warrior from your hand on an open square. Your warrior must point to at least one tile occupied'),nl,
@@ -291,30 +307,11 @@ instructions:- nl,
         write('Gather your plunder by adding the number on the warrior tiles and iron weapons you capture. The winner is'),nl,
         write('the player with the most plunder. In the case of a draw, the player with the most occupation disks on the'),nl,
         write('battlefield wins.'),nl,nl,
-        write('(2) - Exit'), nl,
+        write('(1) - Back'), nl,
         write('Input (end with .) :'), nl,
         read(Input),
-        member(Input, [1,2]) ->instructionsMenu(Input);
-                mainMenu.
-
-/*----------------------------------------------------MENUS--------------------------------------------------------*/
-
-mainMenu(1):- playMenu.
-mainMenu(2):- instructionsMenu.
-mainMenu(3):- write('Exit'),nl.
-
-mainMenu:- logo,
-        write('Main Menu'), nl,
-        write('(1) - Play'), nl,
-        write('(2) - Instructions'), nl,
-        write('(3) - Exit'), nl, nl,
-        write('Input (end with .) :'), nl,
-        read(Input),
-        member(Input, [1,2,3]) ->mainMenu(Input);
-                mainMenu.
-
-instructionsMenu:-instructions.
-instructionsMenu(2):-mainMenu.
+        Input =:= 1 ->mainMenu;
+                instructionsMenu.
 
 playMenu(1):- write('Player vs Player'), nl.
 playMenu(2):- write('Player vs Computer'), nl, selectDifficultyMenu.
@@ -323,25 +320,74 @@ playMenu(4):- mainMenu.
 
 playMenu:- nl,
 	write('Play'), nl,
-	write('(1) Player vs Player'), nl,
-	write('(2) Player vs Computer'), nl,
-	write('(3) Computer vs Computer'), nl,
+	selectBoardSize.
+
+selectBoardSize(1):- createBoard(6), selectNumberOfPlayers.
+selectBoardSize(2):- createBoard(7), selectNumberOfPlayers.
+selectBoardSize(3):- createBoard(8), selectNumberOfPlayers.
+selectBoardSize(4):- mainMenu.
+
+selectBoardSize:- nl,
+	write('-> Select Board Size'), nl,
+	write('   Select Number of Players'), nl,
+	write('   Select Difficulty'), nl, nl,
+	write('(1) Small (6x6)'), nl,
+	write('(2) Medium (7x7)'), nl,
+	write('(3) Large (8x8)'), nl,
 	write('(4) Back'), nl, nl,
 	write('Input (end with .) :'), nl,
 	read(Input),
-	member(Input, [1,2,3,4]) -> playMenu(Input);
-		playMenu.
+	member(Input, [1,2,3,4]) -> selectBoardSize(Input);
+		selectBoardSize.
 
-selectDifficultyMenu(1):- write('Difficulty = Easy'), nl.
-selectDifficultyMenu(2):- write('Difficulty = Advanced'), nl.
-selectDifficultyMenu(3):- playMenu.
+selectNumberOfPlayers(1):- createGamePlayers(2), selectDifficultyMenu(1).
+selectNumberOfPlayers(2):- createGamePlayers(3), selectDifficultyMenu(1).
+selectNumberOfPlayers(3):- createGamePlayers(4), selectDifficultyMenu(1).
+selectNumberOfPlayers(4):- selectBoardSize.
 
-selectDifficultyMenu:- nl,
-	write('Select Difficulty'), nl,
-	write('(1) - Easy'), nl,
-	write('(2) - Advanced'), nl,
-	write('(3) - Back'), nl, nl,
+selectNumberOfPlayers:- nl,
+	write('   Select Board Size'), nl,
+	write('-> Select Number of Players'), nl,
+	write('   Select Difficulty'), nl, nl,
+	write('(1) Two'), nl,
+	write('(2) Three'), nl,
+	write('(3) Four'), nl, 
+	write('(4) Back'), nl, nl,
 	write('Input (end with .) :'), nl,
 	read(Input),
-	member(Input, [1,2,3]) ->selectDifficultyMenu(Input);
-		selectDifficultyMenu.
+	member(Input, [1,2,3,4]) -> selectNumberOfPlayers(Input);
+		selectNumberOfPlayers.
+
+nextPlayer(PlayerID):-
+	PlayerID1 is PlayerID + 1,
+	getNumberOfPlayers(NumberOfPlayers), 
+	PlayerID1 < NumberOfPlayers -> selectDifficultyMenu(PlayerID1);
+		write('Game Start'), nl, nl.
+selectPlayerDifficulty(PlayerID, 1):-
+	addPlayer(PlayerID, -1),
+	nextPlayer(PlayerID).
+selectPlayerDifficulty(PlayerID, 2):-
+	addPlayer(PlayerID, 1),
+	nextPlayer(PlayerID).
+selectPlayerDifficulty(PlayerID, 3):-
+	addPlayer(PlayerID, 2),
+	nextPlayer(PlayerID).
+selectPlayerDifficulty(PlayerID, 4):-
+	PlayerID1 is PlayerID - 1,
+	PlayerID1 > 0 -> (removePlayer(PlayerID1), selectDifficultyMenu(PlayerID1));
+		selectNumberOfPlayers.
+
+selectDifficultyMenu(PlayerID):- nl,
+	write('   Select Board Size'), nl,
+	write('   Select Number of Players'), nl,
+	write('-> Select Difficulty'), nl, nl,
+
+	format('Player ~D ', PlayerID), nl,
+	write('(1) - Human'), nl,
+	write('(2) - Computer - Easy'), nl,
+	write('(3) - Computer - Advanced'), nl, 
+	write('(4) - Back'), nl, nl,
+	write('Input (end with .) :'), nl,
+	read(Input),
+	member(Input, [1,2,3,4]) ->selectPlayerDifficulty(PlayerID, Input);
+		selectDifficultyMenu(PlayerID).

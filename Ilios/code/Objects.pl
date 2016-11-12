@@ -30,14 +30,18 @@ setGamePlayers(_,_):-
 setGamePlayers(NumberOfPlayers, Players):-
 	assert(gamePlayers(NumberOfPlayers, Players)).
 createGamePlayers(NumberOfPlayers):-
-	Players is [],
-	setGamePlayers(NumberOfPlayers, Players).
+	setGamePlayers(NumberOfPlayers, []).
 
+removePlayer(Id):-
+	getPlayer(Id, Player),
+	getPlayers(Players),
+	delete(Players, Player, NewPlayers),
+	setPlayers(NewPlayers).
 addPlayer(Id, Difficulty):-
-	Pieces is [],
-	PiecesWon is [],
-	PointsWon is [],
-	Player is [Id, Difficulty, Pieces, PiecesWon, PointsWon],
+	Pieces = [],
+	PiecesWon = [],
+	PointsWon = 0,
+	Player = [Id, Difficulty, Pieces, PiecesWon, PointsWon],
 	getPlayers(Players),
 	append(Players, [Player], NewPlayers),
 	setPlayers(NewPlayers).
