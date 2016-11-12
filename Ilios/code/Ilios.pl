@@ -361,7 +361,7 @@ selectNumberOfPlayers:- nl,
 nextPlayer(PlayerID):-
 	PlayerID1 is PlayerID + 1,
 	getNumberOfPlayers(NumberOfPlayers), 
-	PlayerID1 < NumberOfPlayers -> selectDifficultyMenu(PlayerID1);
+	PlayerID < NumberOfPlayers  -> selectDifficultyMenu(PlayerID1);
 		write('Game Start'), nl, nl.
 selectPlayerDifficulty(PlayerID, 1):-
 	addPlayer(PlayerID, -1),
