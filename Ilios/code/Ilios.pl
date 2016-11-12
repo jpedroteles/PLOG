@@ -267,19 +267,54 @@ logo:- nl,
   write('     | || | | (_) \\__ \\'), nl,
 	write('    |___|_|_|\\___/|___/'), nl, nl.
 
+instructions:- nl,
+        write('Instructions:'),nl,
+        write('**Rule 1 Deploy & Occupy**'),nl,
+        write(' Place one warrior from your hand on an open square. Your warrior must point to at least one tile occupied'),nl,
+        write('by an opponent, or to an unoccupied iron weapon'),nl,
+        write('  -Your warrior cannot point only to one of your own occupied tiles, or only at an open square. However,'),nl,
+        write('  as long as at least one ray makes a valid attack, the whole play is valid.'),nl,
+        write('  -If you are unable to deploy a warrior on any battleground, reveal your hand to con#rm. You may then place'),nl,
+        write('  a warrior on any open square. However, if you can make a valid play, you must make that play.'),nl,
+        write('**Rule 2 Raid**'),nl,
+        write(' After deploying your warrior, you now raid all of the warrior and iron weapons tiles that your warrior'),nl,
+        write('points to. Start by removing your opponents disks.Then place your disks on the warriors you are'),nl,
+        write('raiding. Finally, place your disk on the original warrior you placed.'),nl,
+        write('**Rule 3 Capture Plunder**'),nl,
+        write(' When a tile is completely surrounded by other tiles, occupation disks, or the battlefield\'s edge, its'),nl,
+        write('plunder can be captured. The surrounded warrior is removed and kept by the player whose color disk'),nl,
+        write('occupies the warrior. The occupying disk is left behind to mark the victory.'),nl,
+        write('**Rule 4 Reinforcements**'),nl,
+        write(' Draw a face-down warrior and add it to your hand.'),nl,
+        write('**End of Play**'),nl,
+        write(' Play ends when no open square remains'),nl, 
+        write('Gather your plunder by adding the number on the warrior tiles and iron weapons you capture. The winner is'),nl,
+        write('the player with the most plunder. In the case of a draw, the player with the most occupation disks on the'),nl,
+        write('battlefield wins.'),nl,nl,
+        write('(2) - Exit'), nl,
+        write('Input (end with .) :'), nl,
+        read(Input),
+        member(Input, [1,2]) ->instructionsMenu(Input);
+                mainMenu.
+
+/*----------------------------------------------------MENUS--------------------------------------------------------*/
+
 mainMenu(1):- playMenu.
-mainMenu(2):- write('Instructions'), nl.
+mainMenu(2):- instructionsMenu.
 mainMenu(3):- write('Exit'),nl.
 
 mainMenu:- logo,
-	write('Main Menu'), nl,
-	write('(1) - Play'), nl,
-	write('(2) - Instructions'), nl,
-	write('(3) - Exit'), nl, nl,
-	write('Input (end with .) :'), nl,
-	read(Input),
-	member(Input, [1,2,3]) ->mainMenu(Input);
-		mainMenu.
+        write('Main Menu'), nl,
+        write('(1) - Play'), nl,
+        write('(2) - Instructions'), nl,
+        write('(3) - Exit'), nl, nl,
+        write('Input (end with .) :'), nl,
+        read(Input),
+        member(Input, [1,2,3]) ->mainMenu(Input);
+                mainMenu.
+
+instructionsMenu:-instructions.
+instructionsMenu(2):-mainMenu.
 
 playMenu(1):- write('Player vs Player'), nl.
 playMenu(2):- write('Player vs Computer'), nl, selectDifficultyMenu.
