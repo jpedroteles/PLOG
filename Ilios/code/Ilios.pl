@@ -1,9 +1,7 @@
 /*LIBRARIES*/
 :-	use_module(library(lists)),
 	use_module(library(random)).
-
-:-	dynamic
-      gameBoard/1.
+:- include('Objects.pl').
 
 /*--------------------------------------------------PRINT BOARD START------------------------------------------------*/
 /*PRINT ROWS*/
@@ -241,21 +239,7 @@ replace(X,Y, NewElement):-
  	setBoard(NewBoard).
 
 
-setGameBoard(_,_):-
-    retract(gameBoard(_)),
-    fail.
-setGameBoard(Board,Size) :-
-    assert(gameBoard([Board,Size])).
-setBoard(Board):-
-		getBoardSize(Size),
-		setGameBoard(Board, Size).
-
-getGameBoard(Board, Size):-
-    gameBoard([Board, Size]).
-getBoard(Board):-
-		gameBoard([Board,_]).
-getBoardSize(Size):-
-		gameBoard([_, Size]).
+/*----------------------------------------------------MENUS--------------------------------------------------------*/
 
 logo:- nl,
 	write('           ___'), nl,
@@ -282,10 +266,6 @@ logo:- nl,
 	write('     | || | |/ _ \\/ __|'), nl,
   write('     | || | | (_) \\__ \\'), nl,
 	write('    |___|_|_|\\___/|___/'), nl, nl.
-
-
-
-/*----------------------------------------------------MENUS--------------------------------------------------------*/
 
 mainMenu(1):- playMenu.
 mainMenu(2):- write('Instructions'), nl.
