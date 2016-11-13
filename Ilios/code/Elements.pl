@@ -3,7 +3,7 @@
 :-	dynamic
 			gameBoard/2,
 			gameDeck/1,
-			gamePlayers/2.
+			gamePlayers/3.
 
 removePieceDeck(Index):-
 	getDeck(Deck),
@@ -43,23 +43,25 @@ addPiecePlayer(Piece, PlayerID):-
 
 
 getNumberOfPlayers(NumberOfPlayers):-
-	gamePlayers(NumberOfPlayers, _).
+	gamePlayers(NumberOfPlayers,_,_).
 getPlayers(Players):-
-	gamePlayers(_, Players).
+	gamePlayers(_,Players,_).
+getCurrentPlayer(ID):-
+	gamePlayers(_,_,ID).
 getPlayer(ID, Player):-
 	getPlayers(Players),
 	nth1(ID, Players, Player).
+getPlayerDifficulty(ID, Difficulty):-
+	getPlayer(ID, Player),
+	nth0(1, Player, Difficulty).
 getPlayerPieces(ID, Pieces):-
-	getPlayers(Players),
-	nth1(ID, Players, Player),
+	getPlayer(ID, Player),
 	nth0(2, Player, Pieces).	
 getPiecesWon(ID, PiecesWon):-
-	getPlayers(Players),
-	nth1(ID, Players, Player),
+	getPlayer(ID, Player),
 	nth0(3, Player, PiecesWon).
 getScore(ID, Score):-
-	getPlayers(Players),
-	nth1(ID, Players, Player),
+	getPlayer(ID, Player),
 	nth0(4, Player, Score).
 
 
@@ -69,16 +71,30 @@ updatePlayer(PlayerID, Player):-
 	replaceElementInList(Players, Index, Player, NewPlayers),
 	setPlayers(NewPlayers).
 
+
+setNextPlayer:-
+	getCurrentPlayer(ID),
+	getNumberOfPlayers(N),
+	NextID is ID+1,
+	(N >= NextID -> setCurrentPlayer(NextID);
+		setCurrentPlayer(1)).
+
+setCurrentPlayer(ID):-
+	getNumberOfPlayers(NumberOfPlayers),
+	getPlayers(Players),
+	setGamePlayers(NumberOfPlayers, Players, ID).
+
 setPlayers(Players):-
 	getNumberOfPlayers(NumberOfPlayers),
-	setGamePlayers(NumberOfPlayers, Players).
-setGamePlayers(_,_):-
-	retract(gamePlayers(_,_)),
+	getCurrentPlayer(ID),
+	setGamePlayers(NumberOfPlayers, Players, ID).
+setGamePlayers(_,_,_):-
+	retract(gamePlayers(_,_,_)),
 	fail.
-setGamePlayers(NumberOfPlayers, Players):-
-	assert(gamePlayers(NumberOfPlayers, Players)).
+setGamePlayers(NumberOfPlayers, Players,CurrentID):-
+	assert(gamePlayers(NumberOfPlayers, Players, CurrentID)).
 createGamePlayers(NumberOfPlayers):-
-	setGamePlayers(NumberOfPlayers, []).
+	setGamePlayers(NumberOfPlayers, [], 0).
 
 removePlayer(Id):-
 	getPlayer(Id, Player),
