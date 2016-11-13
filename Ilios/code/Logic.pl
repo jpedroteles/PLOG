@@ -20,6 +20,9 @@ drawPieces(PlayerID):-
 	Length < 3 -> drawPieces(PlayerID, Length).
 
 
+makePiece(-1, Value, Orientation, Piece):-
+	append([" "],[Value],List),
+	append(List, [Orientation], Piece).
 makePiece(1, Value, Orientation, Piece):-
 	append(["O"],[Value],List),
 	append(List, [Orientation], Piece).
@@ -50,7 +53,7 @@ startGame:-
 	createDeck,
 	getNumberOfPlayers(N),
 	startGame(N),
-	newTurn.
+	placeWeapons.
 
 newTurn(4):- mainMenu.
 newTurn:-
@@ -62,6 +65,27 @@ newTurn:-
 	(member(Input, [1,2,3]) -> selectPiece(Input);
 		newTurn)).
 
+selectWeaponX(X):-
+	write('-> Pick Column'), nl,
+	write('   Pick Line'), nl,nl,
+	write('Input (ex: "a".) :'), nl,
+	read(Input),
+	(is_list(Input) ->
+		(getBoardSize(Size),
+		Column is Input - 97, 
+		(Column > -1, Column < Size) -> X is Input; selectWeaponX(X));
+	selectWeaponX(X)).
+selectWeaponY(Y):-
+	write('   Pick Column'), nl,
+	write('-> Pick Line'), nl,nl,
+	write('Input (ex: 1.) :'), nl,
+	read(Input),
+	(number(Input) ->
+		(getBoardSize(Size),
+		Line is Size - Input, 
+		(Line > -1, Line < Size) -> Y is Input; selectWeaponY(Y));
+	selectWeaponY(Y)).
+
 selectX(X):-
 	write('-> Pick Column'), nl,
 	write('   Pick Line'), nl,
@@ -71,8 +95,8 @@ selectX(X):-
 	(is_list(Input) ->
 		(getBoardSize(Size),
 		Column is Input - 97, 
-		(Column > -1, Column < Size) -> X is Input; selectX(Column));
-	selectX(Column)).
+		(Column > -1, Column < Size) -> X is Input; selectX(X));
+	selectX(X)).
 
 selectY(Y):-
 	write('   Pick Column'), nl,
@@ -83,8 +107,8 @@ selectY(Y):-
 	(number(Input) ->
 		(getBoardSize(Size),
 		Line is Size - Input, 
-		(Line > -1, Line < Size) -> Y is Input; selectY(Line));
-	selectY(Line)).
+		(Line > -1, Line < Size) -> Y is Input; selectY(Y));
+	selectY(Y)).
 
 selectOrientation(Orientation):-
 	write('   Pick Column'), nl,
@@ -105,3 +129,34 @@ selectPiece(PieceNumber):-
 	(placePiece(X,Y,PlayerID,Piece,Orientation) -> (removePiecePlayer(PieceNumber,PlayerID), drawPieces(PlayerID), setNextPlayer, newTurn);
 		(nl, write('ERROR: Could not place piece.'), nl, newTurn)).
 
+
+
+placeWeapon(ID):-
+	printBoard, nl,
+	turnToPlay(ID), nl,
+	write('Place an Iron Weapon :'), nl,
+	(placeWeapon -> true;
+		(nl, write('ERROR: Invalid Position'), nl, placeWeapon(ID))).
+
+
+placeWeapon:-
+	selectWeaponX(X), selectWeaponY(Y),
+	placePiece(X,Y,-1,10,"N").
+placeWeapons(2):-
+	placeWeapon(1),
+	placeWeapon(2),
+	placeWeapon(1).
+placeWeapons(3):-
+	placeWeapon(1),
+	placeWeapon(2),
+	placeWeapon(3).
+placeWeapons(4):-
+	placeWeapon(1),
+	placeWeapon(2),
+	placeWeapon(3),
+	placeWeapon(4).
+
+placeWeapons:-
+	getNumberOfPlayers(N),
+	placeWeapons(N),
+	newTurn.
