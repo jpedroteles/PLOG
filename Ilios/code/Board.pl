@@ -158,8 +158,8 @@ printBoard:-
 
 createBoard(6):- 
 	/*Board = ([
-				[[-1, -1, -1], [-1, -1, -1], [-1, -1, -1], [-1, -1, -1],[-1, -1, -1],[-1, -1, -1]], 
-				[[-1, -1, -1], ["B", 2, "N"], ["B", 3, "S"], ["B", 10, -1],["O", 3, "W"],[-1, -1, -1]], 
+				[["O", 8, -1], ["Y", 10, -1], [-1, -1, -1], [-1, -1, -1],[-1, -1, -1],[-1, -1, -1]], 
+				[["G", 2, "E"], ["B", 2, "N"], ["B", 3, "S"], ["B", 10, -1],["O", 3, "W"],[-1, -1, -1]], 
 				[[-1, -1, -1], ["B", 1, "S"], ["O", -1, -1], ["B", -1, -1],["B", 2, "N"],[-1, -1, -1]], 
 				[["B", 8, -1], ["B", 4, -1], ["O", 1, "N"], ["B", 4, -1],["B", 2, "N"],[-1, -1, -1]], 
 				[["B", 10, -1], [-1, -1, -1], [-1, -1, -1], [-1, -1, -1],[-1, -1, -1],[-1, -1, -1]], 
@@ -171,8 +171,17 @@ createBoard(6):-
 				[[-1, -1, -1], [-1, -1, -1], [-1, -1, -1], [-1, -1, -1],[-1, -1, -1],[-1, -1, -1]], 
 				[[-1, -1, -1], [-1, -1, -1], [-1, -1, -1], [-1, -1, -1],[-1, -1, -1],[-1, -1, -1]], 
 				[[-1, -1, -1], [-1, -1, -1], [-1, -1, -1], [-1, -1, -1],[-1, -1, -1],[-1, -1, -1]], 
-				[[-1, -1, -1], [-1, -1, -1], [-1, -1, -1], [-1, -1, -1],[-1, -1, -1],[-1, -1, -1]] 
+				[[" ", 10, -1], [" ", -1, -1], [-1, -1, -1], [-1, -1, -1],[-1, -1, -1],[-1, -1, -1]] 
 					]),
+
+	/*Board = ([
+				[[-1, -1, -1], [-1, -1, -1], [-1, -1, -1], [-1, -1, -1],[-1, -1, -1],[-1, -1, -1]], 
+				[[-1, -1, -1], [-1, -1, -1], [-1, -1, -1], [-1, -1, -1],[-1, -1, -1],[-1, -1, -1]], 
+				[[-1, -1, -1], [-1, -1, -1], [-1, -1, -1], [-1, -1, -1],[-1, -1, -1],[-1, -1, -1]], 
+				[[-1, -1, -1], [-1, -1, -1], [-1, -1, -1], [-1, -1, -1],[-1, -1, -1],[-1, -1, -1]], 
+				[[-1, -1, -1], [-1, -1, -1], [-1, -1, -1], [-1, -1, -1],[-1, -1, -1],[-1, -1, -1]], 
+				[[-1, -1, -1], [-1, -1, -1], [-1, -1, -1], [-1, -1, -1],[-1, -1, -1],[-1, -1, -1]] 
+					]),*/
 	Size = 6,
 	setGameBoard(Board,Size).
 createBoard(7):- 
@@ -210,11 +219,22 @@ getElement(Board, Size, X, Y, Element):-
 	nth0(Line, Board, Row),
 	Column is X - 97,
 	nth0(Column, Row, Element).
-	
+
+%get("a",1,Element)	
 get(X,Y, Element):- 
 	getGameBoard(Board,Size), 
 	getElement(Board,Size, X, Y, Element).
 
+%get(0,5,Element)
+get2(X,Y,Element):-
+	getBoard(Board),
+	nth0(Y, Board, Row),
+	nth0(X, Row, Element).
+
+cellHasNoTeam(X,Y):-
+	get(X,Y,Element),
+	nth0(0,Element,Team),
+	Team =:= -1 -> true; false.
 
 getCellTeam(X,Y,Team):-
 	get(X,Y,Element),
@@ -225,6 +245,18 @@ getCellValue(X,Y,Value):-
 getCellOrientation(X,Y,Orientation):-
 	get(X,Y,Element),
 	nth0(2, Element, Orientation).
+
+
+captureCell(X,Y):-
+	getCellTeam(X,Y,Team),
+	getCellValue(X,Y,Value),
+	member(Team,["O","B","G","Y"])->
+		(append([Team],[-1],List),
+		append(List,[-1], NewCell),
+		getTeamID(Team, ID),
+		increaseScore(ID,Value),
+		replace(X,Y,NewCell)
+		).
 
 setCellTeam(X,Y,1):-
 	getCellValue(X,Y,Value),
@@ -282,3 +314,5 @@ replace(X,Y, NewElement):-
 	Line is Size - Y, Line > -1, Line < Size,
  	replaceY(Board, Column, Line, NewElement, NewBoard),
  	setBoard(NewBoard).
+
+

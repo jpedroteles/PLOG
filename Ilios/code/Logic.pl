@@ -129,6 +129,50 @@ raid(X,Y,PieceValue,Orientation):-
 	getCurrentPlayer(ID),
 	raid(ID,X,Y,PieceValue,Orientation).
 
+
+checkCapturedPiece(X,Y):-
+	getCellTeam(X,Y,Team),
+	Team =:= " " -> fail;
+	(cellHasNoTeam(X,Y) -> fail;
+	(getCellValue(X,Y, Value),
+	Value =:= -1 -> fail;
+
+	getBoardSize(Size),
+	Column is X - 97, Column > -1, Column < Size,
+	Line is Size - Y, Line > -1, Line < Size,
+
+	X1 is X-1, Y1 is Y-1,
+	X2 is X+1, Y2 is Y+1,
+	X3 is X-1, Y3 is Y+1,
+	X4 is X+1, Y4 is Y-1,
+	(
+	cellHasNoTeam(X1,Y1); cellHasNoTeam(X2,Y2); cellHasNoTeam(X3,Y3); cellHasNoTeam(X4,Y4); 
+	cellHasNoTeam(X1,Y); cellHasNoTeam(X2,Y); cellHasNoTeam(X,Y3); cellHasNoTeam(X,Y4) 
+	) -> false; true)).
+	
+
+checkCapturedPieces(_,0).
+checkCapturedPieces(0,Y):-
+	getBoardSize(Size),
+	Y1 is Y-1,
+	checkCapturedPieces(Size, Y1).
+checkCapturedPieces(X,Y):-
+	getBoardSize(Size),
+	Column is X + 96,
+	Line is Size - Y + 1,
+	X1 is X-1,
+	(checkCapturedPiece(Column, Line) -> 
+		(captureCell(Column,Line), checkCapturedPieces(X1,Y));
+	checkCapturedPieces(X1,Y)).
+	
+
+checkCapturedPieces:-
+	getBoardSize(Size),
+	checkCapturedPieces(Size,Size).
+
+
+
+
 makePiece(-1, Value, Orientation, Piece):-
 	append([" "],[Value],List),
 	append(List, [Orientation], Piece).
@@ -169,6 +213,7 @@ startGame:-
 
 newTurn(4):- mainMenu.
 newTurn:-
+	checkCapturedPieces,
 	turnInfo,
 	write('(4) - Save and Exit'), nl, nl,
 	write('Choose Piece (end with .) :'), nl,

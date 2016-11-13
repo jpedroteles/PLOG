@@ -53,6 +53,18 @@ getPieceValue(Piece,Value):-
 getPieceOrientation(Piece,Orientation):-
 	nth1(3, Piece,Orientation).
 
+getTeamID(Team, ID):-
+	member(Team,["O","B","G","Y"])->
+	(Team =:= "O" -> 
+		ID = 1;
+	Team =:= "B" -> 
+		ID = 2;
+	Team =:= "G" -> 
+		ID = 3;
+	Team =:= "Y" -> 
+		ID = 4);
+	ID = (-1).
+
 getNumberOfPlayers(NumberOfPlayers):-
 	gamePlayers(NumberOfPlayers,_,_).
 getPlayers(Players):-
@@ -75,10 +87,28 @@ getScore(ID, Score):-
 	getPlayer(ID, Player),
 	nth0(4, Player, Score).
 
+setScore(ID, NewScore):-
+	getPlayer(ID, Player),
+	replaceElementInList(Player, 4, NewScore, NewPlayer),
+	updatePlayer(ID, NewPlayer).
+increasePiecesWon(ID):-
+	getPlayer(ID, Player),
+	getPiecesWon(ID,PiecesWon),
+	NewPiecesWon is PiecesWon + 1,
+	replaceElementInList(Player, 3, NewPiecesWon, NewPlayer),
+	updatePlayer(ID, NewPlayer).
+
+increaseScore(ID, Value):-
+	getScore(ID, Score),
+	NewScore is Score+Value,
+	setScore(ID, NewScore),
+	increasePiecesWon(ID).
+
 setPlayerPieces(PlayerID, NewPieces):-
 	getPlayer(PlayerID, Player),
 	replaceElementInList(Player, 2, NewPieces, NewPlayer),
 	updatePlayer(PlayerID, NewPlayer).
+
 
 updatePlayer(PlayerID, Player):-
 	getPlayers(Players),
@@ -118,7 +148,7 @@ removePlayer(Id):-
 	setPlayers(NewPlayers).
 addPlayer(Id, Difficulty):-
 	Pieces = [],
-	PiecesWon = [],
+	PiecesWon = 0,
 	PointsWon = 0,
 	Player = [Id, Difficulty, Pieces, PiecesWon, PointsWon],
 	getPlayers(Players),

@@ -186,9 +186,8 @@ printScore(0).
 printScore(N):-
 	getNumberOfPlayers(Number),
 	PlayerID is (Number - N + 1),
-	getPiecesWon(PlayerID, Pieces),
-	length(Pieces, NumPieces),
 	getScore(PlayerID, Score),
+	getPiecesWon(PlayerID, NumPieces),
 	printScoreText(PlayerID, Score, NumPieces),
 	N1 is N-1,
 	printScore(N1).
