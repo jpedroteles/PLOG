@@ -134,6 +134,7 @@ selectPiece(PieceNumber):-
 placeWeapon(ID):-
 	printBoard, nl,
 	turnToPlay(ID), nl,
+	showHand(ID),
 	write('Place an Iron Weapon :'), nl,
 	(placeWeapon -> true;
 		(nl, write('ERROR: Invalid Position'), nl, placeWeapon(ID))).
