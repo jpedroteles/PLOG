@@ -48,6 +48,10 @@ addPiecePlayer(Piece, PlayerID):-
 			setPlayerPieces(PlayerID, NewPieces));
 		fail.
 
+getPieceValue(Piece,Value):-
+	nth1(2, Piece,Value).
+getPieceOrientation(Piece,Orientation):-
+	nth1(3, Piece,Orientation).
 
 getNumberOfPlayers(NumberOfPlayers):-
 	gamePlayers(NumberOfPlayers,_,_).

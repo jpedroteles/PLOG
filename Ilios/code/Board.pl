@@ -159,7 +159,7 @@ printBoard:-
 createBoard(6):- 
 	/*Board = ([
 				[[-1, -1, -1], [-1, -1, -1], [-1, -1, -1], [-1, -1, -1],[-1, -1, -1],[-1, -1, -1]], 
-				[[-1, -1, -1], ["O", 2, "N"], ["B", 3, "S"], ["B", 10, -1],["O", 3, "W"],[-1, -1, -1]], 
+				[[-1, -1, -1], ["B", 2, "N"], ["B", 3, "S"], ["B", 10, -1],["O", 3, "W"],[-1, -1, -1]], 
 				[[-1, -1, -1], ["B", 1, "S"], ["O", -1, -1], ["B", -1, -1],["B", 2, "N"],[-1, -1, -1]], 
 				[["B", 8, -1], ["B", 4, -1], ["O", 1, "N"], ["B", 4, -1],["B", 2, "N"],[-1, -1, -1]], 
 				[["B", 10, -1], [-1, -1, -1], [-1, -1, -1], [-1, -1, -1],[-1, -1, -1],[-1, -1, -1]], 
@@ -200,3 +200,85 @@ createBoard(8):-
 					]),
 	Size = 8,
 	setGameBoard(Board,Size).
+
+
+/*----------------------------------------------------FUNCTIONS------------------------------------------------------*/
+
+
+getElement(Board, Size, X, Y, Element):-
+	Line is Size - Y,
+	nth0(Line, Board, Row),
+	Column is X - 97,
+	nth0(Column, Row, Element).
+	
+get(X,Y, Element):- 
+	getGameBoard(Board,Size), 
+	getElement(Board,Size, X, Y, Element).
+
+
+getCellTeam(X,Y,Team):-
+	get(X,Y,Element),
+	nth0(0, Element, Team).
+getCellValue(X,Y,Value):-
+	get(X,Y,Element),
+	nth0(1, Element, Value).
+getCellOrientation(X,Y,Orientation):-
+	get(X,Y,Element),
+	nth0(2, Element, Orientation).
+
+setCellTeam(X,Y,1):-
+	getCellValue(X,Y,Value),
+	getCellTeam(X,Y,Team),
+	Team \= "O",
+	Value \= (-1) ->
+	(getCellOrientation(X,Y,Orientation),
+	append(["O"],[Value],List),
+	append(List,[Orientation], NewCell),
+	replace(X,Y,NewCell)).
+setCellTeam(X,Y,2):-
+	getCellValue(X,Y,Value),
+	getCellTeam(X,Y,Team),
+	Team \= "B",
+	Value \= (-1) ->
+	(getCellOrientation(X,Y,Orientation),
+	append(["B"],[Value],List),
+	append(List,[Orientation], NewCell),
+	replace(X,Y,NewCell)).
+setCellTeam(X,Y,3):-
+	getCellValue(X,Y,Value),
+	getCellTeam(X,Y,Team),
+	Team \= "G",
+	Value \= (-1) ->
+	(getCellOrientation(X,Y,Orientation),
+	append(["G"],[Value],List),
+	append(List,[Orientation], NewCell),
+	replace(X,Y,NewCell)).
+setCellTeam(X,Y,4):-
+	getCellValue(X,Y,Value),
+	getCellTeam(X,Y,Team),
+	Team \= "Y",
+	Value \= (-1) ->
+	(getCellOrientation(X,Y,Orientation),
+	append(["Y"],[Value],List),
+	append(List,[Orientation], NewCell),
+	replace(X,Y,NewCell)).
+
+replaceY([L|Ls], X, 0, Element, [R|Ls]):-
+  replaceX(L, X, Element, R).
+replaceY([L|Ls], X, Y, Element, [L|Rs]) :-
+  Y > 0,
+  Y1 is Y-1,
+  replaceY(Ls, X, Y1, Element, Rs).
+
+replaceX([_|Cs], 0, Element, [Element|Cs]).
+replaceX([C|Cs], X, Element, [C|Rs]):-
+  X > 0,
+  X1 is X-1,
+  replaceX(Cs, X1, Element, Rs).  
+
+replace(X,Y, NewElement):- 
+	getGameBoard(Board,Size), 
+	Column is X - 97, Column > -1, Column < Size,
+	Line is Size - Y, Line > -1, Line < Size,
+ 	replaceY(Board, Column, Line, NewElement, NewBoard),
+ 	setBoard(NewBoard).

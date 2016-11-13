@@ -20,6 +20,115 @@ drawPieces(PlayerID):-
 	Length < 3 -> drawPieces(PlayerID, Length).
 
 
+raid(ID,X,Y,1,Orientation):-
+	getBoardSize(Size),
+	Column is X - 97, Column > -1, Column < Size,
+	Line is Size - Y, Line > -1, Line < Size,
+	Orientation =:= "N" ->
+	(
+		Y1 is Y+1, 
+		(setCellTeam(X, Y1, ID); setCellTeam(X,Y,ID)) -> raid(ID,X,Y,1,Orientation); true
+	);
+	Orientation =:= "S" ->
+	(
+		Y1 is Y-1, 
+		(setCellTeam(X, Y1, ID); setCellTeam(X,Y,ID)) -> raid(ID,X,Y,1,Orientation); true
+	);
+	Orientation =:= "W" ->
+	(
+		X1 is X-1, 
+		(setCellTeam(X1, Y, ID); setCellTeam(X,Y,ID)) -> raid(ID,X,Y,1,Orientation); true
+	);
+	Orientation =:= "E" ->
+	(
+		X1 is X+1, 
+		(setCellTeam(X1, Y, ID); setCellTeam(X,Y,ID)) -> raid(ID,X,Y,1,Orientation); true
+	).
+		
+
+raid(ID,X,Y,2,Orientation):-
+	getBoardSize(Size),
+	Column is X - 97, Column > -1, Column < Size,
+	Line is Size - Y, Line > -1, Line < Size,
+	member(Orientation, ["N","S"])->
+	( 
+		X1 is X-1, Y1 is Y+1,
+		X2 is X+1, Y2 is Y-1, 
+		(setCellTeam(X1,Y1,ID);	setCellTeam(X2,Y2,ID); setCellTeam(X,Y,ID)) -> raid(ID,X,Y,2,Orientation); true
+	);
+	member(Orientation, ["W","E"])->
+	(
+		X1 is X-1, Y1 is Y-1,
+		X2 is X+1, Y2 is Y+1, 
+		(setCellTeam(X1,Y1,ID); setCellTeam(X2,Y2,ID); setCellTeam(X,Y,ID)) -> raid(ID,X,Y,2,Orientation); true
+	).
+
+raid(ID,X,Y,3,Orientation):-
+	getBoardSize(Size),
+	Column is X - 97, Column > -1, Column < Size,
+	Line is Size - Y, Line > -1, Line < Size,
+
+	Orientation =:= "N" ->
+	(
+		X1 is X-1,
+		Y2 is Y+1,
+		X3 is X+1,
+		(setCellTeam(X1,Y,ID); setCellTeam(X,Y2,ID); setCellTeam(X3,Y,ID); setCellTeam(X,Y,ID)) -> raid(ID,X,Y,3,Orientation); true
+	);
+	Orientation =:= "S" ->
+	(
+		X1 is X-1,
+		Y2 is Y-1,
+		X3 is X+1,
+		(setCellTeam(X1,Y,ID); setCellTeam(X,Y2,ID); setCellTeam(X3,Y,ID); setCellTeam(X,Y,ID)) -> raid(ID,X,Y,3,Orientation); true
+	);
+	Orientation =:= "W" ->
+	(
+		Y1 is Y-1,
+		Y2 is Y+1,
+		X3 is X-1,
+		(setCellTeam(X1,Y,ID); setCellTeam(X,Y2,ID); setCellTeam(X3,Y,ID); setCellTeam(X,Y,ID)) -> raid(ID,X,Y,3,Orientation); true
+	);
+	Orientation =:= "E" ->
+	(
+		Y1 is Y-1,
+		Y2 is Y+1,
+		X3 is X+1,
+		(setCellTeam(X,Y1,ID); setCellTeam(X,Y2,ID); setCellTeam(X3,Y,ID); setCellTeam(X,Y,ID)) -> raid(ID,X,Y,3,Orientation); true
+	).
+
+raid(ID,X,Y,4,_):-
+	getBoardSize(Size),
+	Column is X - 97, Column > -1, Column < Size,
+	Line is Size - Y, Line > -1, Line < Size,
+
+	X1 is X-1, Y1 is Y-1,
+	X2 is X+1, Y2 is Y+1,
+	X3 is X-1, Y3 is Y+1,
+	X4 is X+1, Y4 is Y-1,
+	(setCellTeam(X1,Y1,ID); setCellTeam(X2,Y2,ID); setCellTeam(X3,Y3,ID); setCellTeam(X4,Y4,ID); setCellTeam(X,Y,ID)) -> raid(ID,X,Y,4,_); true.
+
+raid(ID,X,Y,8,_):-
+	getBoardSize(Size),
+	Column is X - 97, Column > -1, Column < Size,
+	Line is Size - Y, Line > -1, Line < Size,
+
+	X1 is X-1, Y1 is Y-1,
+	X2 is X+1, Y2 is Y+1,
+	X3 is X-1, Y3 is Y+1,
+	X4 is X+1, Y4 is Y-1,
+	(
+	setCellTeam(X1,Y1,ID); setCellTeam(X2,Y2,ID); setCellTeam(X3,Y3,ID); setCellTeam(X4,Y4,ID); 
+	setCellTeam(X1,Y,ID); setCellTeam(X2,Y,ID); setCellTeam(X,Y3,ID); setCellTeam(X,Y4,ID); 
+	setCellTeam(X,Y,ID)
+	) -> raid(ID,X,Y,8,_); true.
+
+raid(_,_,_,10,_).
+
+raid(X,Y,PieceValue,Orientation):-
+	getCurrentPlayer(ID),
+	raid(ID,X,Y,PieceValue,Orientation).
+
 makePiece(-1, Value, Orientation, Piece):-
 	append([" "],[Value],List),
 	append(List, [Orientation], Piece).
@@ -37,7 +146,10 @@ makePiece(4, Value, Orientation, Piece):-
 	append(List, [Orientation], Piece).
 
 placePiece(-1, X,Y,Piece):-
-	replace(X,Y, Piece).
+	replace(X,Y, Piece),
+	getPieceValue(Piece,Value),
+	getPieceOrientation(Piece,Orientation),
+	raid(X,Y,Value,Orientation).
 placePiece(_,_,_,_):- fail.
 placePiece(X,Y, PlayerID, PieceValue, Orientation):-
 	getCellValue(X,Y,Value),
@@ -125,9 +237,14 @@ selectPiece(PieceNumber):-
 	getCurrentPlayer(PlayerID),
 	getPlayerPieces(PlayerID, Pieces),
 	nth1(PieceNumber, Pieces,Piece),
-	selectX(X), selectY(Y), selectOrientation(Orientation),
+
+	(member(Piece, [1,2,3]) -> 
+	(selectX(X), selectY(Y), selectOrientation(Orientation),
 	(placePiece(X,Y,PlayerID,Piece,Orientation) -> (removePiecePlayer(PieceNumber,PlayerID), drawPieces(PlayerID), setNextPlayer, newTurn);
-		(nl, write('ERROR: Could not place piece.'), nl, newTurn)).
+		(nl, write('ERROR: Could not place piece.'), nl, newTurn)));
+	(selectWeaponX(X), selectWeaponY(Y),
+	(placePiece(X,Y,PlayerID,Piece,"N") -> (removePiecePlayer(PieceNumber,PlayerID), drawPieces(PlayerID), setNextPlayer, newTurn);
+		(nl, write('ERROR: Could not place piece.'), nl, newTurn)))).
 
 
 

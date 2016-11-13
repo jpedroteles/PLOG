@@ -7,48 +7,6 @@
 
 /*----------------------------------------------------FUNCTIONS------------------------------------------------------*/
 
-/*GET*/
-getElement(Board, Size, X, Y, Element):-
-	Line is Size - Y,
-	nth0(Line, Board, Row),
-	Column is X - 97,
-	nth0(Column, Row, Element).
-	
-get(X,Y, Element):- 
-	getGameBoard(Board,Size), 
-	getElement(Board,Size, X, Y, Element).
-
-
-getCellTeam(X,Y,Team):-
-	get(X,Y,Element),
-	nth0(0, Element, Team).
-getCellValue(X,Y,Value):-
-	get(X,Y,Element),
-	nth0(1, Element, Value).
-getCellOrientation(X,Y,Orientation):-
-	get(X,Y,Element),
-	nth0(2, Element, Orientation).
-
-replaceY([L|Ls], X, 0, Element, [R|Ls]):-
-  replaceX(L, X, Element, R).
-replaceY([L|Ls], X, Y, Element, [L|Rs]) :-
-  Y > 0,
-  Y1 is Y-1,
-  replaceY(Ls, X, Y1, Element, Rs).
-
-replaceX([_|Cs], 0, Element, [Element|Cs]).
-replaceX([C|Cs], X, Element, [C|Rs]):-
-  X > 0,
-  X1 is X-1,
-  replaceX(Cs, X1, Element, Rs).  
-
-replace(X,Y, NewElement):- 
-	getGameBoard(Board,Size), 
-	Column is X - 97, Column > -1, Column < Size,
-	Line is Size - Y, Line > -1, Line < Size,
- 	replaceY(Board, Column, Line, NewElement, NewBoard),
- 	setBoard(NewBoard).
-
 replaceElementInList([_|T], 0, Element, [Element|T]).
 replaceElementInList([H|T], I, Element, [H|R]):- 
 	I > 0, 
