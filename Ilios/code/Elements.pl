@@ -13,7 +13,6 @@ removePieceDeck(Index):-
 	replaceElementInList(Deck, Index, N1, NewDeck),
 	setDeck(NewDeck).
 
-
 getNumberPieces(Index, Number):-
 	getDeck(Deck),
 	nth1(Index, Deck, Number).
@@ -53,7 +52,16 @@ getPlayer(ID, Player):-
 getPlayerPieces(ID, Pieces):-
 	getPlayers(Players),
 	nth1(ID, Players, Player),
-	nth0(2, Player, Pieces).
+	nth0(2, Player, Pieces).	
+getPiecesWon(ID, PiecesWon):-
+	getPlayers(Players),
+	nth1(ID, Players, Player),
+	nth0(3, Player, PiecesWon).
+getScore(ID, Score):-
+	getPlayers(Players),
+	nth1(ID, Players, Player),
+	nth0(4, Player, Score).
+
 
 updatePlayer(PlayerID, Player):-
 	getPlayers(Players),
@@ -102,3 +110,4 @@ getBoard(Board):-
 		gameBoard(Board,_).
 getBoardSize(Size):-
 		gameBoard(_, Size).
+

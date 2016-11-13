@@ -6,7 +6,15 @@ startGame(PlayerID):-
 startGame:-
 	createDeck,
 	getNumberOfPlayers(N),
-	startGame(N).
+	startGame(N),
+	newTurn(1).
+
+newTurn(PlayerID):-
+	turnInfo(PlayerID),
+	write('Choose Piece (end with .) :'), nl,
+	read(Input),
+	(member(Input, [1,2,3]) -> write('OK');
+		newTurn(PlayerID)).
 
 drawPiece(PlayerID, 0):- addPiecePlayer(1, PlayerID).
 drawPiece(PlayerID, 1):- addPiecePlayer(2, PlayerID).

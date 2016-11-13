@@ -81,7 +81,7 @@ checkOrientationMid(Orientation, Value, Team):-
 printElementMid([Team|Tail]):-
 	Team =:= -1 -> write('     ');
 	member(Team, ["O","B","G","Y"]) ->printElementMid2(Tail, Team);
-		write('Invalid Team').
+		printElementMid2(Tail, " ").
 printElementMid2([Value|Tail], Team):-
 	member(Value, [-1,2,4,8,10]) -> checkValueMid(Value, Team);
 		checkOrientationMid(Tail, Value, Team).
@@ -390,3 +390,70 @@ selectDifficultyMenu(PlayerID):- nl,
 	read(Input),
 	member(Input, [1,2,3,4]) ->selectPlayerDifficulty(PlayerID, Input);
 		selectDifficultyMenu(PlayerID).
+
+printScore(0).
+printScore(N):-
+	getNumberOfPlayers(Number),
+	PlayerID is (Number - N + 1),
+	getPiecesWon(PlayerID, Pieces),
+	length(Pieces, NumPieces),
+	getScore(PlayerID, Score),
+	printScoreText(PlayerID, Score, NumPieces),
+	N1 is N-1,
+	printScore(N1).
+printScoreText(1, Score, NumPieces):-
+	format('ORANGE~t~10| ~D~t~15| (~Dp)', [Score, NumPieces]), nl.
+printScoreText(2, Score, NumPieces):-
+	format('BLUE~t~10| ~D~t~15| (~Dp)', [Score, NumPieces]), nl.
+printScoreText(3, Score, NumPieces):-
+	format('GREEN~t~10| ~D~t~15| (~Dp)', [Score, NumPieces]), nl.
+printScoreText(4, Score, NumPieces):-
+	format('YELLOW~t~10| ~D~t~15| (~Dp)', [Score, NumPieces]), nl.
+
+printScore:-
+	getNumberOfPlayers(N),
+	write('Current Score:'), nl,
+	printScore(N).
+
+printTable:- nl,
+	format('ORANGE~t~10| ~D~t~15| (~Dp)', [120, 10]), nl,
+	format('BLUE~t~10| ~D~t~15| (~Dp)', [10, 3]), nl,
+	format('GREEN~t~10| ~D~t~15| (~Dp)', [8, 2]), nl,
+	format('YELLOW~t~10| ~D~t~15| (~Dp)', [25, 0]), nl.
+
+turnToPlay(1):- write('-> ORANGE\'s turn to play:'), nl.
+turnToPlay(2):- write('-> BLUE\'s turn to play:'), nl.
+turnToPlay(3):- write('-> GREEN\'s turn to play:'), nl.
+turnToPlay(4):- write('-> YELLOW\'s turn to play:'), nl.
+
+showHand(PlayerID):-
+	getPlayerPieces(PlayerID, Pieces),
+	write('Current Hand:'), nl,
+	nth0(0, Pieces, X),
+	append([" "], [X], X1),
+	append(X1, ["N"], Piece1),
+	nth0(1, Pieces, Y),
+	append([" "], [Y], Y1),
+	append(Y1, ["N"], Piece2),
+	nth0(2, Pieces, Z),
+	append([" "], [Z], Z1),
+	append(Z1, ["N"], Piece3),
+  write('####### ####### #######'), nl,
+  write('#'), printElementTop(Piece1), write('# '),
+  write('#'), printElementTop(Piece2), write('# '),
+  write('#'), printElementTop(Piece3), write('# '), nl, 
+  write('#'), printElementMid(Piece1), write('# '),
+  write('#'), printElementMid(Piece2), write('# '),
+  write('#'), printElementMid(Piece3), write('# '), nl,
+  write('#'), printElementBot(Piece1), write('# '),
+  write('#'), printElementBot(Piece2), write('# '),
+  write('#'), printElementBot(Piece3), write('# '), nl,
+  write('####### ####### #######'), nl,
+  write('  (1)     (2)     (3)'), nl, nl.
+
+
+turnInfo(PlayerID):- nl,
+	printBoard, nl,
+	printScore, nl,
+	turnToPlay(PlayerID),
+	showHand(PlayerID).
