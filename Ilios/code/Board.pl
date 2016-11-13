@@ -35,11 +35,11 @@ checkOrientationTop(Orientation, Value):-
 			write('     '));
 	Orientation =:= "W" ->
 		(Value =:= 1 -> write('     ');
-		Value =:= 2 -> write('     /');
+		Value =:= 2 -> write('    /');
 		write('  |  '));
 	Orientation =:= "E" ->
 		(Value =:= 1 -> write('     ');
-		Value =:= 2 -> write('     /');
+		Value =:= 2 -> write('    /');
 		write('  |  '));
 	write('Invalid Orientation').
 
@@ -97,11 +97,11 @@ checkOrientationBot(Orientation, Value):-
 			write('  |  '));
 	Orientation =:= "W" ->
 		(Value =:= 1 -> write('     ');
-		Value =:= 2 -> write('/     ');
+		Value =:= 2 -> write('/    ');
 		write('  |  '));
 	Orientation =:= "E" ->
 		(Value =:= 1 -> write('     ');
-		Value =:= 2 -> write('/     ');
+		Value =:= 2 -> write('/    ');
 		write('  |  '));
 	write('Invalid Orientation').
 
@@ -128,7 +128,7 @@ printBorder(N):-
 /*LETTERS*/
 printLetters(Size, Size):- nl.
 printLetters(Size, N):-
-  format('   ~16r   ',10+N),
+  format('   ~32r   ',10+N),
   N1 is N+1,
   printLetters(Size, N1).
 

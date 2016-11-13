@@ -35,7 +35,7 @@ makePiece(4, Value, Orientation, Piece):-
 
 placePiece(-1, X,Y,Piece):-
 	replace(X,Y, Piece).
-placePiece(_,_,_,_).
+placePiece(_,_,_,_):- fail.
 placePiece(X,Y, PlayerID, PieceValue, Orientation):-
 	getCellValue(X,Y,Value),
 	makePiece(PlayerID, PieceValue, Orientation, Piece),
@@ -59,20 +59,49 @@ newTurn:-
 	write('Choose Piece (end with .) :'), nl,
 	read(Input),
 	(Input =:= 4 -> newTurn(4);
-	(member(Input, [1,2,3]) -> (setNextPlayer, newTurn);
+	(member(Input, [1,2,3]) -> selectPiece(Input);
 		newTurn)).
 
-selectX(Column):-
+selectX(X):-
 	write('-> Pick Column'), nl,
 	write('   Pick Line'), nl,
 	write('   Pick Orientation'), nl,nl,
 	write('Input (ex: "a".) :'), nl,
 	read(Input),
-	getBoardSize(Size),
-	Column is Input - 97, 
-	Column > -1 -> (Column < Size -> write('OK'); selectX(Column));
-		selectX(Column).
-selectPiece(PlayerID, PieceNumber):-
+	(is_list(Input) ->
+		(getBoardSize(Size),
+		Column is Input - 97, 
+		(Column > -1, Column < Size) -> X is Input; selectX(Column));
+	selectX(Column)).
+
+selectY(Y):-
+	write('   Pick Column'), nl,
+	write('-> Pick Line'), nl,
+	write('   Pick Orientation'), nl,nl,
+	write('Input (ex: 1.) :'), nl,
+	read(Input),
+	(number(Input) ->
+		(getBoardSize(Size),
+		Line is Size - Input, 
+		(Line > -1, Line < Size) -> Y is Input; selectY(Line));
+	selectY(Line)).
+
+selectOrientation(Orientation):-
+	write('   Pick Column'), nl,
+	write('   Pick Line'), nl,
+	write('-> Pick Orientation'), nl,nl,
+	write('Input N/S/W/E (ex: "N".) :'), nl,
+	read(Input),
+	(is_list(Input) ->
+		(member(Input, ["N","S","W","E"]) -> Orientation is Input; selectOrientation(Orientation));
+	selectOrientation(Orientation)).
+
+
+selectPiece(PieceNumber):-
+	getCurrentPlayer(PlayerID),
 	getPlayerPieces(PlayerID, Pieces),
 	nth1(PieceNumber, Pieces,Piece),
-	write(Piece).
+	selectX(X), selectY(Y), selectOrientation(Orientation),
+	(placePiece(X,Y,PlayerID,Piece,Orientation) -> (removePiecePlayer(PieceNumber,PlayerID), drawPieces(PlayerID), setNextPlayer, newTurn);
+		(nl, write('ERROR: Could not place piece.'), nl, newTurn)).
+

@@ -35,16 +35,17 @@ createDeck:-
 createDeck:-
 	assert(gameDeck([7,7,7,7,7])).
 
-
+removePiecePlayer(PieceNumber, PlayerID):-
+	getPlayerPieces(PlayerID, Pieces),
+	nth1(PieceNumber, Pieces, _, NewPieces),
+	setPlayerPieces(PlayerID, NewPieces).
 addPiecePlayer(Piece, PlayerID):-
 	member(Piece, [1,2,3,4,8]),
 	getPlayerPieces(PlayerID, Pieces),
 	length(Pieces, Length),
 	Length < 3 -> 
 		(append(Pieces, [Piece], NewPieces), 
-			getPlayer(PlayerID, Player),
-			replaceElementInList(Player, 2, NewPieces, NewPlayer),
-			updatePlayer(PlayerID, NewPlayer));
+			setPlayerPieces(PlayerID, NewPieces));
 		fail.
 
 
@@ -70,6 +71,10 @@ getScore(ID, Score):-
 	getPlayer(ID, Player),
 	nth0(4, Player, Score).
 
+setPlayerPieces(PlayerID, NewPieces):-
+	getPlayer(PlayerID, Player),
+	replaceElementInList(Player, 2, NewPieces, NewPlayer),
+	updatePlayer(PlayerID, NewPlayer).
 
 updatePlayer(PlayerID, Player):-
 	getPlayers(Players),

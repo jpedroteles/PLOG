@@ -99,7 +99,7 @@ newGame(2):- mainMenu.
 mainMenu(1):-  nl,
 	write('New Game'), nl,
 	checkGameExists -> 
-		(write('Warning: There is already a saved game. Are you sure you want to start a new game anyway?'), nl,
+		(write('WARNING: There is already a saved game. Are you sure you want to start a new game anyway?'), nl,
 			write('(1) Yes'), nl,
 			write('(2) No'), nl,
 			read(Input),
@@ -108,7 +108,7 @@ mainMenu(1):-  nl,
 	newGame(1).
 mainMenu(2):-  nl,
 	checkGameExists -> newTurn;
-		(write('There is no current game!'), nl, mainMenu).
+		(write('ERROR: There is no current game!'), nl, mainMenu).
 	
 mainMenu(3):- instructionsMenu.
 mainMenu(4).
