@@ -52,12 +52,15 @@ startGame:-
 	startGame(N),
 	newTurn.
 
+newTurn(4):- mainMenu.
 newTurn:-
 	turnInfo,
+	write('(4) - Save and Exit'), nl, nl,
 	write('Choose Piece (end with .) :'), nl,
 	read(Input),
+	(Input =:= 4 -> newTurn(4);
 	(member(Input, [1,2,3]) -> (setNextPlayer, newTurn);
-		newTurn).
+		newTurn)).
 
 selectX(Column):-
 	write('-> Pick Column'), nl,

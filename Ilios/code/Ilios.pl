@@ -58,6 +58,8 @@ replaceElementInList(L, _, _, L).
 
 /*----------------------------------------------------MENUS--------------------------------------------------------*/
 
+ilios:- mainMenu.
+
 logo:- nl,
 	write('           ___'), nl,
 	write('           \\\\||'), nl,
@@ -85,16 +87,31 @@ logo:- nl,
 	write('    |___|_|_|\\___/|___/'), nl, nl.
 
 
+checkGameExists:-
+	(getCurrentPlayer(ID) ->
+		(ID \= 0 -> true;
+			false);
+		false).
+
+newGame(1):- resetGame, selectBoardSize.
+newGame(2):- mainMenu.
+
 mainMenu(1):-  nl,
 	write('New Game'), nl,
-	selectBoardSize.
+	checkGameExists -> 
+		(write('Warning: There is already a saved game. Are you sure you want to start a new game anyway?'), nl,
+			write('(1) Yes'), nl,
+			write('(2) No'), nl,
+			read(Input),
+      (member(Input, [1,2]) -> newGame(Input);
+                mainMenu(1)));
+	newGame(1).
 mainMenu(2):-  nl,
-	(getCurrentPlayer(ID) ->
-		(ID =:= 0 -> (write('There is no current game!'), nl, mainMenu);
-		newTurn);
-		(write('There is no current game!'), nl, mainMenu)).
+	checkGameExists -> newTurn;
+		(write('There is no current game!'), nl, mainMenu).
+	
 mainMenu(3):- instructionsMenu.
-mainMenu(4):- write('Exit'),nl.
+mainMenu(4).
 
 mainMenu:- logo,
         write('Main Menu'), nl,
@@ -140,7 +157,7 @@ instructionsMenu:- nl,
 selectBoardSize(1):- createBoard(6), selectNumberOfPlayers.
 selectBoardSize(2):- createBoard(7), selectNumberOfPlayers.
 selectBoardSize(3):- createBoard(8), selectNumberOfPlayers.
-selectBoardSize(4):- mainMenu.
+selectBoardSize(4):- resetGame, mainMenu.
 
 selectBoardSize:- nl,
 	write('-> Select Board Size'), nl,
@@ -266,7 +283,6 @@ showHand(PlayerID):-
   write('#'), printElementBot(Piece3), write('# '), nl,
   write('####### ####### #######'), nl,
   write('  (1)     (2)     (3)'), nl, nl.
-
 
 turnInfo:- nl,
 	printBoard, nl,

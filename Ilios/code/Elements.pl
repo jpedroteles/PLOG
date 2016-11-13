@@ -5,6 +5,12 @@
 			gameDeck/1,
 			gamePlayers/3.
 
+resetGame:-
+	retract(gameBoard(_,_));
+	retract(gameDeck(_));
+	retract(gamePlayers(_,_,_));
+	true.
+
 removePieceDeck(Index):-
 	getDeck(Deck),
 	nth0(Index, Deck, Number),
