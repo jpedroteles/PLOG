@@ -17,7 +17,7 @@ drawPieces(PlayerID, N):-
 drawPieces(PlayerID):-
 	getPlayerPieces(PlayerID, Pieces),
 	length(Pieces, Length),
-	Length < 3 -> drawPieces(PlayerID, Length).
+	Length < 3 -> drawPieces(PlayerID, Length); true.
 
 
 raid(ID,X,Y,1,Orientation):-
@@ -50,13 +50,26 @@ raid(ID,X,Y,2,Orientation):-
 	getBoardSize(Size),
 	Column is X - 97, Column > -1, Column < Size,
 	Line is Size - Y, Line > -1, Line < Size,
-	member(Orientation, ["N","S"])->
+	
+	Orientation =:= "N" ->
 	( 
 		X1 is X-1, Y1 is Y+1,
 		X2 is X+1, Y2 is Y-1, 
 		(setCellTeam(X1,Y1,ID);	setCellTeam(X2,Y2,ID); setCellTeam(X,Y,ID)) -> raid(ID,X,Y,2,Orientation); true
 	);
-	member(Orientation, ["W","E"])->
+	Orientation =:= "S" ->
+	( 
+		X1 is X-1, Y1 is Y+1,
+		X2 is X+1, Y2 is Y-1, 
+		(setCellTeam(X1,Y1,ID);	setCellTeam(X2,Y2,ID); setCellTeam(X,Y,ID)) -> raid(ID,X,Y,2,Orientation); true
+	);
+	Orientation =:= "W" ->
+	(
+		X1 is X-1, Y1 is Y-1,
+		X2 is X+1, Y2 is Y+1, 
+		(setCellTeam(X1,Y1,ID); setCellTeam(X2,Y2,ID); setCellTeam(X,Y,ID)) -> raid(ID,X,Y,2,Orientation); true
+	);
+	Orientation =:= "E" ->
 	(
 		X1 is X-1, Y1 is Y-1,
 		X2 is X+1, Y2 is Y+1, 
