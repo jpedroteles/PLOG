@@ -20,10 +20,97 @@ drawPieces(PlayerID):-
 	Length < 3 -> drawPieces(PlayerID, Length); true.
 
 
+canRaid(ID,X,Y,1,Orientation,Bool):-
+	(Orientation =:= "N" ->
+	(Y1 is Y+1, 
+	canSetCellTeam(X, Y1, ID) -> Bool = 1; Bool = 0);
+	Orientation =:= "S" ->
+	(Y1 is Y-1, 
+	canSetCellTeam(X, Y1, ID) -> Bool = 1; Bool = 0);
+	Orientation =:= "W" ->
+	(X1 is X-1, 
+	canSetCellTeam(X1, Y, ID) -> Bool = 1; Bool = 0);
+	Orientation =:= "E" ->
+	(X1 is X+1, 
+	canSetCellTeam(X1, Y, ID) -> Bool = 1; Bool = 0)).	
+
+canRaid(ID,X,Y,2,Orientation, Bool):-
+	Orientation =:= "N" ->
+	( 
+		X1 is X-1, Y1 is Y+1,
+		X2 is X+1, Y2 is Y-1, 
+		(canSetCellTeam(X1,Y1,ID);	canSetCellTeam(X2,Y2,ID)) -> Bool = 1; Bool = 0
+	);
+	Orientation =:= "S" ->
+	( 
+		X1 is X-1, Y1 is Y+1,
+		X2 is X+1, Y2 is Y-1, 
+		(canSetCellTeam(X1,Y1,ID);	canSetCellTeam(X2,Y2,ID)) -> Bool = 1; Bool = 0
+	);
+	Orientation =:= "W" ->
+	(
+		X1 is X-1, Y1 is Y-1,
+		X2 is X+1, Y2 is Y+1, 
+		(canSetCellTeam(X1,Y1,ID);	canSetCellTeam(X2,Y2,ID)) -> Bool = 1; Bool = 0
+	);
+	Orientation =:= "E" ->
+	(
+		X1 is X-1, Y1 is Y-1,
+		X2 is X+1, Y2 is Y+1, 
+		(canSetCellTeam(X1,Y1,ID);	canSetCellTeam(X2,Y2,ID)) -> Bool = 1; Bool = 0
+	).
+
+
+canRaid(ID,X,Y,3,Orientation,Bool):-
+	Orientation =:= "N" ->
+	(
+		X1 is X-1,
+		Y2 is Y+1,
+		X3 is X+1,
+		(canSetCellTeam(X1,Y,ID); canSetCellTeam(X,Y2,ID); canSetCellTeam(X3,Y,ID)) -> Bool = 1; Bool = 0
+	);
+	Orientation =:= "S" ->
+	(
+		X1 is X-1,
+		Y2 is Y-1,
+		X3 is X+1,
+		(canSetCellTeam(X1,Y,ID); canSetCellTeam(X,Y2,ID); canSetCellTeam(X3,Y,ID)) -> Bool = 1; Bool = 0
+	);
+	Orientation =:= "W" ->
+	(
+		Y1 is Y-1,
+		Y2 is Y+1,
+		X3 is X-1,
+		(canSetCellTeam(X,Y1,ID); canSetCellTeam(X,Y2,ID); canSetCellTeam(X3,Y,ID)) -> Bool = 1; Bool = 0
+	);
+	Orientation =:= "E" ->
+	(
+		Y1 is Y-1,
+		Y2 is Y+1,
+		X3 is X+1,
+		(canSetCellTeam(X,Y1,ID); canSetCellTeam(X,Y2,ID); canSetCellTeam(X3,Y,ID)) -> Bool = 1; Bool = 0
+	).
+
+
+canRaid(ID,X,Y,4,_,Bool):-
+	X1 is X-1, Y1 is Y-1,
+	X2 is X+1, Y2 is Y+1,
+	X3 is X-1, Y3 is Y+1,
+	X4 is X+1, Y4 is Y-1,
+	(canSetCellTeam(X1,Y1,ID); canSetCellTeam(X2,Y2,ID); canSetCellTeam(X3,Y3,ID); canSetCellTeam(X4,Y4,ID)) -> Bool = 1; Bool = 0.
+
+canRaid(ID,X,Y,8,_,Bool):-
+	X1 is X-1, Y1 is Y-1,
+	X2 is X+1, Y2 is Y+1,
+	X3 is X-1, Y3 is Y+1,
+	X4 is X+1, Y4 is Y-1,
+	(
+	canSetCellTeam(X1,Y1,ID); canSetCellTeam(X2,Y2,ID); canSetCellTeam(X3,Y3,ID); canSetCellTeam(X4,Y4,ID); 
+	canSetCellTeam(X1,Y,ID); canSetCellTeam(X2,Y,ID); canSetCellTeam(X,Y3,ID); canSetCellTeam(X,Y4,ID)
+	) -> Bool = 1; Bool = 0.
+
+
 raid(ID,X,Y,1,Orientation):-
-	getBoardSize(Size),
-	Column is X - 97, Column > -1, Column < Size,
-	Line is Size - Y, Line > -1, Line < Size,
 	Orientation =:= "N" ->
 	(
 		Y1 is Y+1, 
@@ -47,10 +134,6 @@ raid(ID,X,Y,1,Orientation):-
 		
 
 raid(ID,X,Y,2,Orientation):-
-	getBoardSize(Size),
-	Column is X - 97, Column > -1, Column < Size,
-	Line is Size - Y, Line > -1, Line < Size,
-	
 	Orientation =:= "N" ->
 	( 
 		X1 is X-1, Y1 is Y+1,
@@ -77,10 +160,6 @@ raid(ID,X,Y,2,Orientation):-
 	).
 
 raid(ID,X,Y,3,Orientation):-
-	getBoardSize(Size),
-	Column is X - 97, Column > -1, Column < Size,
-	Line is Size - Y, Line > -1, Line < Size,
-
 	Orientation =:= "N" ->
 	(
 		X1 is X-1,
@@ -111,10 +190,6 @@ raid(ID,X,Y,3,Orientation):-
 	).
 
 raid(ID,X,Y,4,_):-
-	getBoardSize(Size),
-	Column is X - 97, Column > -1, Column < Size,
-	Line is Size - Y, Line > -1, Line < Size,
-
 	X1 is X-1, Y1 is Y-1,
 	X2 is X+1, Y2 is Y+1,
 	X3 is X-1, Y3 is Y+1,
@@ -122,10 +197,6 @@ raid(ID,X,Y,4,_):-
 	(setCellTeam(X1,Y1,ID); setCellTeam(X2,Y2,ID); setCellTeam(X3,Y3,ID); setCellTeam(X4,Y4,ID); setCellTeam(X,Y,ID)) -> raid(ID,X,Y,4,_); true.
 
 raid(ID,X,Y,8,_):-
-	getBoardSize(Size),
-	Column is X - 97, Column > -1, Column < Size,
-	Line is Size - Y, Line > -1, Line < Size,
-
 	X1 is X-1, Y1 is Y-1,
 	X2 is X+1, Y2 is Y+1,
 	X3 is X-1, Y3 is Y+1,
@@ -296,13 +367,28 @@ selectPiece(PieceNumber):-
 	getPlayerPieces(PlayerID, Pieces),
 	nth1(PieceNumber, Pieces,Piece),
 
-	(member(Piece, [1,2,3]) -> 
-	(selectX(X), selectY(Y), selectOrientation(Orientation),
-	(placePiece(X,Y,PlayerID,Piece,Orientation) -> (removePiecePlayer(PieceNumber,PlayerID), drawPieces(PlayerID), setNextPlayer, newTurn);
-		(nl, write('ERROR: Could not place piece.'), nl, newTurn)));
-	(selectWeaponX(X), selectWeaponY(Y),
-	(placePiece(X,Y,PlayerID,Piece,"N") -> (removePiecePlayer(PieceNumber,PlayerID), drawPieces(PlayerID), setNextPlayer, newTurn);
-		(nl, write('ERROR: Could not place piece.'), nl, newTurn)))).
+	(
+		member(Piece, [1,2,3]) -> 
+			(selectX(X), selectY(Y), selectOrientation(Orientation),
+			canRaid(PlayerID,X,Y,Piece,Orientation,Bool),
+			Bool =:= 1 ->
+				(placePiece(X,Y,PlayerID,Piece,Orientation) -> (removePiecePlayer(PieceNumber,PlayerID), drawPieces(PlayerID), setNextPlayer, newTurn);
+																											(nl, write('ERROR: Could not place piece.'), newTurn));
+				(nl, write('ERROR: Warrior must be pointing to an enemy.'), newTurn)
+			);
+			(member(Piece, [4,8]) ->
+				(selectWeaponX(X), selectWeaponY(Y),
+				canRaid(PlayerID,X,Y,Piece,"N",Bool),
+				Bool =:= 1 ->
+					(placePiece(X,Y,PlayerID,Piece,"N") -> (removePiecePlayer(PieceNumber,PlayerID), drawPieces(PlayerID), setNextPlayer, newTurn);
+																								(nl, write('ERROR: Could not place piece.'), newTurn));
+					(nl, write('ERROR: Warrior must be pointing to an enemy.'), newTurn))
+			);
+			(selectWeaponX(X), selectWeaponY(Y),
+			placePiece(X,Y,PlayerID,Piece,"N") -> (removePiecePlayer(PieceNumber,PlayerID), drawPieces(PlayerID), setNextPlayer, newTurn);
+																						(nl, write('ERROR: Could not place piece.'), newTurn)
+			)
+	).
 
 
 

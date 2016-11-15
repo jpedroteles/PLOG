@@ -258,39 +258,48 @@ captureCell(X,Y):-
 		replace(X,Y,NewCell)
 		).
 
-setCellTeam(X,Y,1):-
+canSetCellTeam(X,Y,1):-
 	getCellValue(X,Y,Value),
 	getCellTeam(X,Y,Team),
-	Team \= "O",
-	Value \= (-1) ->
+	Team \= "O", Value \= (-1).
+canSetCellTeam(X,Y,2):-
+	getCellValue(X,Y,Value),
+	getCellTeam(X,Y,Team),
+	Team \= "B", Value \= (-1).
+canSetCellTeam(X,Y,3):-
+	getCellValue(X,Y,Value),
+	getCellTeam(X,Y,Team),
+	Team \= "G", Value \= (-1).
+canSetCellTeam(X,Y,4):-
+	getCellValue(X,Y,Value),
+	getCellTeam(X,Y,Team),
+	Team \= "Y", Value \= (-1).
+
+setCellTeam(X,Y,1):-
+	canSetCellTeam(X,Y,1) ->
 	(getCellOrientation(X,Y,Orientation),
+	getCellValue(X,Y,Value),
 	append(["O"],[Value],List),
 	append(List,[Orientation], NewCell),
 	replace(X,Y,NewCell)).
 setCellTeam(X,Y,2):-
-	getCellValue(X,Y,Value),
-	getCellTeam(X,Y,Team),
-	Team \= "B",
-	Value \= (-1) ->
+	canSetCellTeam(X,Y,2) ->
 	(getCellOrientation(X,Y,Orientation),
+	getCellValue(X,Y,Value),
 	append(["B"],[Value],List),
 	append(List,[Orientation], NewCell),
 	replace(X,Y,NewCell)).
 setCellTeam(X,Y,3):-
-	getCellValue(X,Y,Value),
-	getCellTeam(X,Y,Team),
-	Team \= "G",
-	Value \= (-1) ->
+	canSetCellTeam(X,Y,3) ->
 	(getCellOrientation(X,Y,Orientation),
+	getCellValue(X,Y,Value),
 	append(["G"],[Value],List),
 	append(List,[Orientation], NewCell),
 	replace(X,Y,NewCell)).
 setCellTeam(X,Y,4):-
-	getCellValue(X,Y,Value),
-	getCellTeam(X,Y,Team),
-	Team \= "Y",
-	Value \= (-1) ->
+	canSetCellTeam(X,Y,4) ->
 	(getCellOrientation(X,Y,Orientation),
+	getCellValue(X,Y,Value),
 	append(["Y"],[Value],List),
 	append(List,[Orientation], NewCell),
 	replace(X,Y,NewCell)).
