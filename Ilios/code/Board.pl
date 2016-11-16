@@ -217,7 +217,8 @@ createBoard(8):-
 getElement(Board, Size, X, Y, Element):-
 	Line is Size - Y,
 	nth0(Line, Board, Row),
-	Column is X - 97,
+	integer(X), %NOT SURE IF FIX
+	Column is X - 97, %SOMETIMES CRASHES HERE
 	nth0(Column, Row, Element).
 
 %get("a",1,Element)	

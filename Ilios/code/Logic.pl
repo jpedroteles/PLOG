@@ -221,10 +221,6 @@ checkCapturedPiece(X,Y):-
 	(getCellValue(X,Y, Value),
 	Value =:= -1 -> fail;
 
-	getBoardSize(Size),
-	Column is X - 97, Column > -1, Column < Size,
-	Line is Size - Y, Line > -1, Line < Size,
-
 	X1 is X-1, Y1 is Y-1,
 	X2 is X+1, Y2 is Y+1,
 	X3 is X-1, Y3 is Y+1,
