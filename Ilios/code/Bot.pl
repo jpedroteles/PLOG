@@ -7,6 +7,13 @@ getBestPlay(X):-
 	last(Values,BestValue),
 	getBestPlay(ValidPlays,BestValue,X).
 
+getRandomPlay(X):-
+	getValidPlays(ValidPlays),
+	length(ValidPlays,Length),
+	random(0,Length,R),
+	nth0(R,ValidPlays,X).
+
+
 findValidPlays(ID,PieceNumber,X,Y,1):-
 	\+canPlacePiece(X,Y) -> true;
 	(
@@ -125,6 +132,31 @@ findValidPlays(ID,PieceNumber,X,Y,8):-
 	(Values > 0 -> addValidPlay(Values,PieceNumber,X,Y,"N");true)
 	).
 
+findValidPlaysNoRestrictions(_, PieceNumber,X,Y):-
+	\+canPlacePiece(X,Y) -> true;
+	addValidPlay(0,PieceNumber,X,Y,"N").
+
+findValidPlaysNoRestrictions(_,0,_).
+findValidPlaysNoRestrictions(0,Y,ID):-
+	getBoardSize(Size),
+	Y1 is Y-1,
+	findValidPlaysNoRestrictions(Size, Y1,ID).
+findValidPlaysNoRestrictions(X,Y,ID):-
+	getBoardSize(Size),
+	Column is X + 96,
+	Line is Size - Y + 1,
+	X1 is X-1,
+	findValidPlaysNoRestrictions(ID,1,Column,Line),
+	findValidPlaysNoRestrictions(ID,2,Column,Line),
+	findValidPlaysNoRestrictions(ID,3,Column,Line),
+	findValidPlaysNoRestrictions(X1,Y,ID).
+findValidPlaysNoRestrictions:-
+	setGamePlays([],[]),
+	getBoardSize(Size),
+	getCurrentPlayer(ID),
+	findValidPlaysNoRestrictions(Size,Size,ID).
+
+
 
 findValidPlays(_,0,_,_,_,_).
 findValidPlays(0,Y,ID,PieceOne,PieceTwo,PieceThree):-
@@ -149,3 +181,21 @@ findValidPlays:-
 	nth1(2,Pieces,PieceTwo),
 	nth1(3,Pieces,PieceThree),
 	findValidPlays(Size,Size,ID,PieceOne,PieceTwo,PieceThree).
+
+
+
+
+makeMove(ID, 1):-
+	getRandomPlay([_,PieceNumber,X,Y,Orientation]),
+	getPlayerPieceValue(ID, PieceNumber, Piece),
+	placePiece(X,Y,ID,Piece,Orientation) -> (removePiecePlayer(PieceNumber,ID), drawPieces(ID), setNextPlayer, newTurn).
+
+makeMove(ID, 2):-
+	getBestPlay([_,PieceNumber,X,Y,Orientation]),
+	getPlayerPieceValue(ID, PieceNumber, Piece),
+	placePiece(X,Y,ID,Piece,Orientation) -> (removePiecePlayer(PieceNumber,ID), drawPieces(ID), setNextPlayer, newTurn).
+
+makeRandomMove:-
+	findValidPlaysNoRestrictions,
+	getCurrentPlayer(ID),
+	makeMove(ID, 1).

@@ -24,6 +24,13 @@ removePieceDeck(Index):-
 getNumberPieces(Index, Number):-
 	getDeck(Deck),
 	nth1(Index, Deck, Number).
+getAvailablePieces(Number):-
+	getNumberPieces(1, N1),
+	getNumberPieces(2, N2),
+	getNumberPieces(3, N3),
+	getNumberPieces(4, N4),
+	getNumberPieces(5, N5),
+	Number is N1 + N2 + N3 + N4 + N5.
 getDeck(Deck):-
 	gameDeck(Deck).
 setDeck(_):-
@@ -35,7 +42,6 @@ createDeck:-
 	retract(gameDeck(_)),
 	fail.
 createDeck:-
-	assert(gameDeck([7,7,7,7,7])).
 
 removePiecePlayer(PieceNumber, PlayerID):-
 	getPlayerPieces(PlayerID, Pieces),
@@ -81,7 +87,10 @@ getPlayerDifficulty(ID, Difficulty):-
 	nth0(1, Player, Difficulty).
 getPlayerPieces(ID, Pieces):-
 	getPlayer(ID, Player),
-	nth0(2, Player, Pieces).	
+	nth0(2, Player, Pieces).
+getPlayerPieceValue(ID, N, Value):-
+	getPlayerPieces(ID, Pieces),
+	nth1(N, Pieces,Value).	
 getPiecesWon(ID, PiecesWon):-
 	getPlayer(ID, Player),
 	nth0(3, Player, PiecesWon).

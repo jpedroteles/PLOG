@@ -251,6 +251,9 @@ turnInfo:- nl,
 	getCurrentPlayer(PlayerID),
 	turnToPlay(PlayerID),
 	showHand(PlayerID).
+turnInfoBot:- nl,
+	printBoard, nl,
+	printScore, nl.
 
 gameOver:- nl,
 	printBoard, nl,

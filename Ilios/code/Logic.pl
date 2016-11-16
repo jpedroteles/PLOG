@@ -314,22 +314,34 @@ newTurn:-
 	checkCapturedPieces,
 	findValidPlays,
 	(checkGameOver -> gameOver;
-		(turnInfo,
-		(canPlay -> (
-			write('(4) - Save and Exit'), nl, nl,
-			write('Choose Piece (end with .) :'), nl,
-			read(Input),
-			(Input =:= 4 -> newTurn(4);
-				(member(Input, [1,2,3]) -> selectPiece(Input);
-					newTurn)));
+		(getCurrentPlayer(ID), getPlayerDifficulty(ID, Difficulty),
+		(Difficulty =:= 0 -> playerTurn;
+				botTurn))).
+
 		
-			(write('No plays available. You can place your warrior on any free position.'), nl, nl,
-			write('(4) - Save and Exit'), nl, nl,
-			write('Choose Piece (end with .) :'), nl,
-			read(Input),
-			(Input =:= 4 -> newTurn(4);
-				(member(Input, [1,2,3]) -> selectFreePiece(Input);
-					newTurn)))))).
+playerTurn:-
+	(turnInfo,
+	(canPlay -> (
+		write('(4) - Save and Exit'), nl, nl,
+		write('Choose Piece (end with .) :'), nl,
+		read(Input),
+		(Input =:= 4 -> newTurn(4);
+			(member(Input, [1,2,3]) -> selectPiece(Input);
+				newTurn)));
+
+		(write('No plays available. You can place your warrior on any free position.'), nl, nl,
+		write('(4) - Save and Exit'), nl, nl,
+		write('Choose Piece (end with .) :'), nl,
+		read(Input),
+		(Input =:= 4 -> newTurn(4);
+			(member(Input, [1,2,3]) -> selectFreePiece(Input);
+				newTurn))))).
+
+botTurn:-
+	(turnInfoBot,
+	getCurrentPlayer(ID),
+	(canPlay -> (getPlayerDifficulty(ID, Difficulty), makeMove(ID, Difficulty));
+		makeRandomMove)).
 
 selectWeaponX(X):-
 	write('-> Pick Column'), nl,
@@ -404,8 +416,7 @@ selectFreePiece(PieceNumber):-
 
 selectPiece(PieceNumber):-
 	getCurrentPlayer(PlayerID),
-	getPlayerPieces(PlayerID, Pieces),
-	nth1(PieceNumber, Pieces,Piece),
+	getPlayerPieceValue(PlayerID, PieceNumber, Piece),
 
 	(
 		member(Piece, [1,2,3]) -> 
