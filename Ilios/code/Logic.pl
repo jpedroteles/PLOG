@@ -458,16 +458,19 @@ placeWeapon:-
 placeWeapons(2):-
 	placeWeapon(1),
 	placeWeapon(2),
-	placeWeapon(1).
+	placeWeapon(1),
+	setCurrentPlayer(1).
 placeWeapons(3):-
 	placeWeapon(1),
 	placeWeapon(2),
-	placeWeapon(3).
+	placeWeapon(3),
+	setCurrentPlayer(1).
 placeWeapons(4):-
 	placeWeapon(1),
 	placeWeapon(2),
 	placeWeapon(3),
-	placeWeapon(4).
+	placeWeapon(4),
+	setCurrentPlayer(1).
 
 placeWeapons:-
 	getNumberOfPlayers(N),
