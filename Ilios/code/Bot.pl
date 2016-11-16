@@ -195,6 +195,11 @@ makeMove(ID, 2):-
 	getPlayerPieceValue(ID, PieceNumber, Piece),
 	placePiece(X,Y,ID,Piece,Orientation) -> (removePiecePlayer(PieceNumber,ID), drawPieces(ID), setNextPlayer, newTurn).
 
+makeMoveWeapon:-
+	findValidPlaysNoRestrictions,
+	getRandomPlay([_,_,X,Y,_]),
+	placePiece(X,Y,-1,10,"N").
+
 makeRandomMove:-
 	findValidPlaysNoRestrictions,
 	getCurrentPlayer(ID),

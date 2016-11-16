@@ -342,6 +342,10 @@ botTurn:-
 	getCurrentPlayer(ID),
 	(canPlay -> (getPlayerDifficulty(ID, Difficulty), makeMove(ID, Difficulty));
 		makeRandomMove)).
+botTurnWeapons:-
+	turnInfoBot,
+	makeMoveWeapon,
+	setNextPlayer.
 
 selectWeaponX(X):-
 	write('-> Pick Column'), nl,
@@ -438,12 +442,18 @@ selectPiece(PieceNumber):-
 
 
 placeWeapon(ID):-
-	printBoard, nl,
-	turnToPlay(ID), nl,
-	showHand(ID),
-	write('Place an Iron Weapon :'), nl,
-	(placeWeapon -> true;
-		(nl, write('ERROR: Invalid Position'), nl, placeWeapon(ID))).
+	getPlayerDifficulty(ID,Difficulty),
+	(Difficulty =:= 0 -> 
+		(turnInfo,
+		write('Place an Iron Weapon :'), nl,
+		(placeWeapon -> setNextPlayer;
+			(nl, write('ERROR: Invalid Position'), nl, placeWeapon(ID))));
+
+		(turnInfoBot,
+		turnToPlay(ID), nl, 
+		makeMoveWeapon, 
+		setNextPlayer)).
+
 
 
 placeWeapon:-
