@@ -42,6 +42,7 @@ createDeck:-
 	retract(gameDeck(_)),
 	fail.
 createDeck:-
+	assert(gameDeck([15,15,15,15,15])).
 
 removePiecePlayer(PieceNumber, PlayerID):-
 	getPlayerPieces(PlayerID, Pieces),
