@@ -1,9 +1,11 @@
 /*LIBRARIES*/
 :- use_module(library(lists)),
-	use_module(library(random)).
+	use_module(library(random)),
+	use_module(library(samsort)).
 :- include('Board.pl').
 :- include('Elements.pl').
 :- include('Logic.pl').
+:- include('Bot.pl').
 
 /*----------------------------------------------------FUNCTIONS------------------------------------------------------*/
 
@@ -46,6 +48,8 @@ logo:- nl,
 
 
 checkGameExists:-
+	checkWeaponsPlaced(Bool),
+	Bool =:= 0 -> (resetGame, fail);
 	(getCurrentPlayer(ID) ->
 		(ID \= 0 -> true;
 			false);
@@ -247,3 +251,13 @@ turnInfo:- nl,
 	getCurrentPlayer(PlayerID),
 	turnToPlay(PlayerID),
 	showHand(PlayerID).
+
+gameOver:- nl,
+	printBoard, nl,
+	printScore, nl,
+	write('GAME OVER'), nl,
+	write('(1) - Main Menu'), nl,
+        write('Input (end with .) :'), nl,
+        read(Input),
+        (Input =:= 1 ->mainMenu;
+                gameOver).

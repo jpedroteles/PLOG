@@ -248,11 +248,14 @@ checkCapturedPieces(X,Y):-
 	(checkCapturedPiece(Column, Line) -> 
 		(captureCell(Column,Line), checkCapturedPieces(X1,Y));
 	checkCapturedPieces(X1,Y)).
-	
-
 checkCapturedPieces:-
 	getBoardSize(Size),
 	checkCapturedPieces(Size,Size).
+
+checkWeaponsPlaced(Bool):-
+	getNumberOfPlayers(NumberOfPlayers),
+	(member(NumberOfPlayers,[2,3]) -> (checkOccupiedSpaces(N), (N < 3 -> Bool is 0; Bool is 1));
+		(checkOccupiedSpaces(N), (N < 4 -> Bool is 0; Bool is 1))).
 
 
 
@@ -273,6 +276,10 @@ makePiece(4, Value, Orientation, Piece):-
 	append(["Y"],[Value],List),
 	append(List, [Orientation], Piece).
 
+canPlacePiece(X,Y):-
+	getCellTeam(X,Y,Team),
+	(member(Team,[" ","O","B","G","Y"]) -> false; true).
+
 placePiece(-1, X,Y,Piece):-
 	replace(X,Y, Piece),
 	getPieceValue(Piece,Value),
@@ -291,20 +298,38 @@ startGame(PlayerID):-
 	startGame(NextPlayer).
 startGame:-
 	createDeck,
+	setGamePlays([],[]),
 	getNumberOfPlayers(N),
 	startGame(N),
 	placeWeapons.
 
+checkGameOver:-
+	getBoardSize(Size),
+	checkOccupiedSpaces(N),
+	Total is Size*Size,
+	(N =:= Total -> true; false).
+
 newTurn(4):- mainMenu.
 newTurn:-
 	checkCapturedPieces,
-	turnInfo,
-	write('(4) - Save and Exit'), nl, nl,
-	write('Choose Piece (end with .) :'), nl,
-	read(Input),
-	(Input =:= 4 -> newTurn(4);
-	(member(Input, [1,2,3]) -> selectPiece(Input);
-		newTurn)).
+	findValidPlays,
+	(checkGameOver -> gameOver;
+		(turnInfo,
+		(canPlay -> (
+			write('(4) - Save and Exit'), nl, nl,
+			write('Choose Piece (end with .) :'), nl,
+			read(Input),
+			(Input =:= 4 -> newTurn(4);
+				(member(Input, [1,2,3]) -> selectPiece(Input);
+					newTurn)));
+		
+			(write('No plays available. You can place your warrior on any free position.'), nl, nl,
+			write('(4) - Save and Exit'), nl, nl,
+			write('Choose Piece (end with .) :'), nl,
+			read(Input),
+			(Input =:= 4 -> newTurn(4);
+				(member(Input, [1,2,3]) -> selectFreePiece(Input);
+					newTurn)))))).
 
 selectWeaponX(X):-
 	write('-> Pick Column'), nl,
@@ -361,6 +386,21 @@ selectOrientation(Orientation):-
 		(member(Input, ["N","S","W","E"]) -> Orientation is Input; selectOrientation(Orientation));
 	selectOrientation(Orientation)).
 
+selectFreePiece(PieceNumber):-
+	getCurrentPlayer(PlayerID),
+	getPlayerPieces(PlayerID, Pieces),
+	nth1(PieceNumber, Pieces,Piece),
+
+	(
+		member(Piece, [1,2,3]) -> 
+			(selectX(X), selectY(Y), selectOrientation(Orientation),
+			placePiece(X,Y,PlayerID,Piece,Orientation) -> (removePiecePlayer(PieceNumber,PlayerID), drawPieces(PlayerID), setNextPlayer, newTurn);
+																											(nl, write('ERROR: Could not place piece.'), newTurn));
+		(member(Piece, [4,8]) ->
+			(selectWeaponX(X), selectWeaponY(Y),
+			placePiece(X,Y,PlayerID,Piece,"N") -> (removePiecePlayer(PieceNumber,PlayerID), drawPieces(PlayerID), setNextPlayer, newTurn);
+																								(nl, write('ERROR: Could not place piece.'), newTurn)))
+	).
 
 selectPiece(PieceNumber):-
 	getCurrentPlayer(PlayerID),
@@ -374,20 +414,14 @@ selectPiece(PieceNumber):-
 			Bool =:= 1 ->
 				(placePiece(X,Y,PlayerID,Piece,Orientation) -> (removePiecePlayer(PieceNumber,PlayerID), drawPieces(PlayerID), setNextPlayer, newTurn);
 																											(nl, write('ERROR: Could not place piece.'), newTurn));
-				(nl, write('ERROR: Warrior must be pointing to an enemy.'), newTurn)
-			);
-			(member(Piece, [4,8]) ->
+				(nl, write('ERROR: Warrior must be pointing to an enemy.'), newTurn));
+		(member(Piece, [4,8]) ->
 				(selectWeaponX(X), selectWeaponY(Y),
 				canRaid(PlayerID,X,Y,Piece,"N",Bool),
 				Bool =:= 1 ->
 					(placePiece(X,Y,PlayerID,Piece,"N") -> (removePiecePlayer(PieceNumber,PlayerID), drawPieces(PlayerID), setNextPlayer, newTurn);
 																								(nl, write('ERROR: Could not place piece.'), newTurn));
-					(nl, write('ERROR: Warrior must be pointing to an enemy.'), newTurn))
-			);
-			(selectWeaponX(X), selectWeaponY(Y),
-			placePiece(X,Y,PlayerID,Piece,"N") -> (removePiecePlayer(PieceNumber,PlayerID), drawPieces(PlayerID), setNextPlayer, newTurn);
-																						(nl, write('ERROR: Could not place piece.'), newTurn)
-			)
+					(nl, write('ERROR: Warrior must be pointing to an enemy.'), newTurn)))
 	).
 
 

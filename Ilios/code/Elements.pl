@@ -3,12 +3,14 @@
 :-	dynamic
 			gameBoard/2,
 			gameDeck/1,
-			gamePlayers/3.
+			gamePlayers/3,
+			gamePlays/2.
 
 resetGame:-
 	retract(gameBoard(_,_));
 	retract(gameDeck(_));
 	retract(gamePlayers(_,_,_));
+	retract(gamePlays(_,_));
 	true.
 
 removePieceDeck(Index):-
@@ -171,4 +173,40 @@ getBoard(Board):-
 		gameBoard(Board,_).
 getBoardSize(Size):-
 		gameBoard(_, Size).
+
+
+
+
+setGamePlays(_,_):-
+	retract(gamePlays(_,_)),
+	fail.
+setGamePlays(X,ValidPlays) :-
+	samsort(X,Values),
+	assert(gamePlays(Values,ValidPlays)).
+
+setValidPlays(ValidPlays):-
+	getValues(Values),
+	setGamePlays(Values,ValidPlays).
+setPlaysValues(X):-
+	getValidPlays(ValidPlays),
+	samsort(X,Values),
+	setGamePlays(Values,ValidPlays).
+
+addValidPlay(Value,PieceNumber,X,Y,Orientation):-
+	getGamePlays(Values,ValidPlays),
+	append(Values,[Value],L1),
+	append(ValidPlays,[[Value,PieceNumber,X,Y,Orientation]],L2),
+	setGamePlays(L1,L2).
+
+canPlay:-
+	getValidPlays(ValidPlays),
+	length(ValidPlays,Length),
+	Length > 0 -> true; false.
+
+getGamePlays(Values,ValidPlays):-
+	gamePlays(Values,ValidPlays).
+getValidPlays(ValidPlays):-
+	gamePlays(_,ValidPlays).
+getPlaysValues(Values):-
+	gamePlays(Values,_).
 
