@@ -91,7 +91,7 @@ write('##     '),
 printRowTop(Tail).
 
 printRowMid([]):- write('##'), nl.
-printRowMid([[Value|State]|Tail]):-
+printRowMid([[Value|[State|_]]|Tail]):-
 write('##'),
 printElementMid(Value,State),
 printRowMid(Tail).
@@ -109,10 +109,7 @@ printElementMid(Value, 0):-
 format(' (~D) ', Value).
 printElementMid(Value, 1):-
 format(' *~D* ', Value).
-printElementMid(Value,State):-
-State =:= -1 -> format('  ~D  ', Value);
-(State =:= 0 -> format(' (~D) ', Value);
-	State =:= 1 -> format(' *~D* ', Value)).
+printElementMid(_,_).
 
 /*BORDER*/
 printBorderAux(0):- 
