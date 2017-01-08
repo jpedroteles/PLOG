@@ -169,7 +169,7 @@ number_blacks_lis([Lista | Goup]) :-
            ),
            number_blacks_lis(Goup).           
                   
-tails_append(Ls, As) :-
+appendTails(Ls, As) :-
     maplist(list_tail, Ls, T),
     append(T, As).
 
