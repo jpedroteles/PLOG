@@ -45,6 +45,21 @@ Board = ([
 	[6,7,8,5,5,4,3,2],
 	[3,3,3,2,4,6,1,7]
 	]).
+createBoard(12,Board):-
+Board = ([
+	[1,1,11,1,12,5,6,11,3,8,9,5],
+	[12,5,4,1,4,8,3,6,2,11,11,7],
+	[7,3,12,1,2,10,4,11,1,11,11,6],
+	[5,8,11,12,11,11,1,1,11,9,4,2],
+	[4,3,7,9,11,11,1,12,10,6,5,2],
+	[8,6,3,5,1,1,1,11,12,2,4,9],
+	[9,1,2,1,1,12,11,11,7,6,3,4],
+	[8,2,5,3,7,11,12,10,1,1,1,11],
+	[1,7,8,11,9,4,2,3,5,6,12,3],
+	[11,7,5,6,8,3,1,2,8,12,1,1],
+	[10,9,6,2,3,2,5,8,9,4,1,1],
+	[3,12,9,4,9,7,1,5,11,3,2,10]
+	]).
 
 /*--------------------------------------------------PRINT BOARD START------------------------------------------------*/
 /*PRINT ROWS*/
@@ -55,15 +70,18 @@ printRowTop([_|Tail]):-
 
 printRowMid([]):- write('##'), nl.
 printRowMid([Value|Tail]):-
-	write('##  '),
-	write(Value), 
-	write('  '),
+	printElementMid(Value),
 	printRowMid(Tail).
 
 printRowBot([]):- write('##').
 printRowBot([_|Tail]):-
 	write('##     '),
 	printRowBot(Tail).
+
+printElementMid(Value):-
+	integer(Value) -> (Value >= 10 -> format('## ~d  ', Value); format('##  ~d  ', Value));
+		format('##  ~a  ', Value).
+
 
 /*BORDER*/
 printBorderAux(0):-	write('##'), nl.
@@ -93,7 +111,7 @@ printBoard(Size, Board, N):-
 	printBorder(Size),
 	write('  '),
 	printRowTop(Row),
-	format('~D ', Size - N),
+	format('~D~2|', Size - N),
 	printRowMid(Row),
 	write('  '),
 	printRowBot(Row),

@@ -4,7 +4,8 @@
 mainMenu(1):- createBoard(5, Board), solveHitori(Board).
 mainMenu(2):- createBoard(7, Board), solveHitori(Board).
 mainMenu(3):- createBoard(8, Board), solveHitori(Board).
-mainMenu(4).
+mainMenu(4):- createBoard(12, Board), solveHitori(Board).
+mainMenu(5).
 
 mainMenu:-
 	write('HITORI'),nl, nl,
@@ -12,10 +13,11 @@ mainMenu:-
 	write('(1) 5x5'),nl,
 	write('(2) 7x7'),nl,
 	write('(3) 8x8'),nl,
-	write('(4) Exit'),nl, nl,
+	write('(4) 12x12'),nl,
+	write('(5) Exit'),nl, nl,
 	write('Input (end with .) :'), nl,
 	read(Input),
-	member(Input, [1,2,3,4]) ->mainMenu(Input);
+	member(Input, [1,2,3,4,5]) ->mainMenu(Input);
 		mainMenu.
 
 
