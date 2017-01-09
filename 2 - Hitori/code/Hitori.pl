@@ -1,10 +1,10 @@
 :- include('Restrictions.pl').
 
 
-mainMenu(1):- createBoard(5, Board), solveHitori(Board).
-mainMenu(2):- createBoard(7, Board), solveHitori(Board).
-mainMenu(3):- createBoard(8, Board), solveHitori(Board).
-mainMenu(4):- createBoard(12, Board), solveHitori(Board).
+mainMenu(1):- createBoard(5, Board), solveHitori(Board), goBack.
+mainMenu(2):- createBoard(7, Board), solveHitori(Board), goBack.
+mainMenu(3):- createBoard(8, Board), solveHitori(Board), goBack.
+mainMenu(4):- createBoard(12, Board), solveHitori(Board), goBack.
 mainMenu(5).
 
 mainMenu:-
@@ -45,7 +45,7 @@ solveHitori(Board):-
 
 	statistics(runtime, [T0|_]),
 	
-	solveHitori(Board, Solution),
+	getSolution(Board, Solution),
 	appendTails(Solution, Vars),
 	labeling([time_out(1000, _)], Vars),
 
@@ -66,6 +66,4 @@ goBack:-
 	(Input =:= 1 ->mainMenu;
 		goBack).
 
-hitori:-  
-	mainMenu,
-	goBack.
+hitori:- mainMenu.
